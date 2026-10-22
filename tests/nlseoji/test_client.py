@@ -1,7 +1,7 @@
 import httpx
 import pytest
 
-from seoji.nlseoji.client import FatalSeojiError, PageSizeTooLarge
+from seoji.nlseoji.client import FatalSeojiError, PageSizeTooLarge, SeojiError
 from tests.seoji_helpers import fixture, paged_handler
 
 
@@ -51,6 +51,36 @@ def test_retries_5xx_then_succeeds(make_client):
 
 def test_gives_up_after_three_retries(make_client):
     client, requests, _ = make_client(lambda r: httpx.Response(500))
-    with pytest.raises(httpx.HTTPStatusError):
+    with pytest.raises(SeojiError) as e:
         client.search(page_no=1, page_size=2)
     assert len(requests) == 4
+    assert "test-key" not in str(e.value)
+    assert e.value.__cause__ is None and e.value.__suppress_context__
+
+
+def test_client_error_does_not_leak_key(make_client):
+    client, requests, _ = make_client(lambda r: httpx.Response(404))
+    with pytest.raises(SeojiError) as e:
+        client.search(page_no=1, page_size=2)
+    assert len(requests) == 1
+    assert "test-key" not in str(e.value) and "404" in str(e.value)
+    assert e.value.__cause__ is None and e.value.__suppress_context__
+
+
+def test_429_is_retried(make_client):
+    calls = []
+
+    def throttled(request):
+        calls.append(request)
+        return httpx.Response(429) if len(calls) == 1 else paged_handler(request)
+
+    client, _, _ = make_client(throttled)
+    assert client.search(page_no=1, page_size=2).total_count == 3
+
+
+def test_non_json_body_is_retried_then_reported(make_client):
+    client, requests, _ = make_client(lambda r: httpx.Response(200, text="<html>점검중</html>"))
+    with pytest.raises(SeojiError) as e:
+        client.search(page_no=1, page_size=2)
+    assert len(requests) == 4
+    assert "test-key" not in str(e.value)

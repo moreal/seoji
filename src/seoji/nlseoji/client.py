@@ -60,27 +60,32 @@ class SeojiClient:
                 self._sleep(wait)
         self._last_call = self._clock()
 
-    def _get(self, params: dict) -> httpx.Response:
+    def _get_json(self, params: dict) -> dict:
+        """GET with retries. Errors never carry the URL, because it contains cert_key."""
         for attempt in range(len(RETRY_DELAYS) + 1):
             self._throttle()
             try:
                 resp = self._http.get(self._base_url, params=params)
-                if resp.status_code < 500:
-                    resp.raise_for_status()
-                    return resp
-                error: Exception = httpx.HTTPStatusError(
-                    f"server error {resp.status_code}", request=resp.request, response=resp
-                )
             except httpx.TransportError as e:
-                error = e
+                error = SeojiError("network", type(e).__name__)
+            else:
+                if resp.status_code == 429 or resp.status_code >= 500:
+                    error = SeojiError(f"http_{resp.status_code}", "server busy or failing")
+                elif resp.status_code >= 400:
+                    raise SeojiError(f"http_{resp.status_code}", "request rejected") from None
+                else:
+                    try:
+                        return resp.json()
+                    except ValueError:
+                        error = SeojiError("bad_body", "response is not JSON")
             if attempt == len(RETRY_DELAYS):
-                raise error
+                raise error from None
             self._sleep(RETRY_DELAYS[attempt])
         raise AssertionError("unreachable")
 
     def search(self, **params) -> SeojiPage:
         public = {k: str(v) for k, v in params.items()} | {"result_style": "json"}
-        raw = self._get(public | {"cert_key": self._cert_key}).json()
+        raw = self._get_json(public | {"cert_key": self._cert_key})
         if raw.get("RESULT") == "ERROR":
             code, message = str(raw.get("ERR_CODE", "")), str(raw.get("ERR_MESSAGE", ""))
             if code == "013":
