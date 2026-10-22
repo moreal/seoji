@@ -1,0 +1,14 @@
+services:
+  db:
+    build: docker/postgres
+    environment:
+      POSTGRES_USER: seoji
+      POSTGRES_PASSWORD: seoji
+      POSTGRES_DB: seoji
+    ports:
+      - "55432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
