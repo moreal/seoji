@@ -1,0 +1,188 @@
+<rdf:RDF
+    xmlns:vs="http://www.w3.org/2003/06/sw-vocab-status/ns#"
+    xmlns:nlfloc="http://lod.nl.go.kr/foreignLocation/"
+    xmlns:nlcon="http://lod.nl.go.kr/countries/"
+    xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#"
+    xmlns:nllib="http://lod.nl.go.kr/library/"
+    xmlns:voaf="http://purl.org/vocommons/voaf#"
+    xmlns:nlsc="http://lod.nl.go.kr/scheme/"
+    xmlns:nlloc="http://lod.nl.go.kr/location/"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:bibframe="http://id.loc.gov/ontologies/bibframe/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:event="http://purl.org/NET/c4dm/event.owl#"
+    xmlns:tmon="http://t-mon/"
+    xmlns:units="http://lod.nl.go.kr/units/"
+    xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+    xmlns:nlgov="http://lod.nl.go.kr/government/"
+    xmlns:nlon="http://lod.nl.go.kr/ontology/"
+    xmlns:vann="http://purl.org/vocab/vann/"
+    xmlns:cc="http://creativecommons.org/ns#"
+    xmlns:org="http://www.w3.org/ns/org#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:nlddc="http://lod.nl.go.kr/ddc/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:schema="http://schema.org/"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:geonames="http://www.geonames.org/ontology#"
+    xmlns:nluv="http://lod.nl.go.kr/university/"
+    xmlns:nls="http://lod.nl.go.kr/subject/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:bibo="http://purl.org/ontology/bibo/"
+    xmlns:nla="http://lod.nl.go.kr/author/"
+    xmlns:nlkdc="http://lod.nl.go.kr/kdc/"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:nlk="http://lod.nl.go.kr/resource/">
+  <bibo:Book rdf:about="http://lod.nl.go.kr/resource/CMO000000034">
+    <nlon:datePublished rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2026-10-11T05:05:20</nlon:datePublished>
+    <nlon:classificationNumberOfNLK>019</nlon:classificationNumberOfNLK>
+    <nlon:keyword>장서목록</nlon:keyword>
+    <nlon:issuedYear>1992</nlon:issuedYear>
+    <rdf:type rdf:resource="http://lod.nl.go.kr/ontology/Book"/>
+    <nlon:itemNumberOfNLK>국343ㄷ</nlon:itemNumberOfNLK>
+    <dc:publisher>國立臺灣大學圖書館</dc:publisher>
+    <bibframe:extent>xxv,432p</bibframe:extent>
+    <dcterms:issued>民國81[1992]</dcterms:issued>
+    <nlon:typeOfData rdf:resource="http://lod.nl.go.kr/resource/dt_gm"/>
+    <nlon:publicationPlace>臺北</nlon:publicationPlace>
+    <bibframe:place rdf:resource="http://lod.nl.go.kr/countries/ch"/>
+    <rdfs:label>臺灣大學舊藏日文臺灣資料目錄 / 國立臺灣大學圖書館 編</rdfs:label>
+    <dcterms:title>臺灣大學舊藏日文臺灣資料目錄</dcterms:title>
+    <nlon:keyword>LIBRARY</nlon:keyword>
+    <nlon:localHolding>EM902763</nlon:localHolding>
+    <owl:sameAs rdf:resource="https://openlibrary.org/books/OL14853893M"/>
+    <bibframe:language rdf:resource="http://lod.nl.go.kr/language/chi"/>
+    <nlon:kdc>019</nlon:kdc>
+    <bibo:isbn>9579019215(平裝)</bibo:isbn>
+    <nlon:editionOfKDC>3</nlon:editionOfKDC>
+    <rdf:type rdf:resource="http://lod.nl.go.kr/ontology/OfflineMaterial"/>
+    <nlon:keyword>CATALOGS</nlon:keyword>
+    <bibframe:extent>27cm</bibframe:extent>
+  </bibo:Book>
+  <nlon:Book rdf:about="http://lod.nl.go.kr/resource/CMO000000021">
+    <rdfs:label>新加坡華文文藝書刊選目 / 新加坡國家圖書館華文小說及文學書刊評選委員會 編</rdfs:label>
+    <bibframe:language rdf:resource="http://lod.nl.go.kr/language/chi"/>
+    <dcterms:issued>1986</dcterms:issued>
+    <nlon:classificationNumberOfNLK>015.1469</nlon:classificationNumberOfNLK>
+    <bibframe:extent>21cm</bibframe:extent>
+    <bibframe:extent>147p</bibframe:extent>
+    <bibo:isbn>9971760185</bibo:isbn>
+    <owl:sameAs rdf:resource="http://worldcat.org/entity/work/id/55922097"/>
+    <nlon:itemNumberOfNLK>신535ㅅ</nlon:itemNumberOfNLK>
+    <nlon:issuedYear>1986</nlon:issuedYear>
+    <nlon:typeOfData rdf:resource="http://lod.nl.go.kr/resource/dt_gm"/>
+    <dcterms:title>新加坡華文文藝書刊選目</dcterms:title>
+    <nlon:kdc>015.1469</nlon:kdc>
+    <dc:publisher>新加坡國家圖書館</dc:publisher>
+    <nlon:keyword>신가파화문문예서간선목</nlon:keyword>
+    <rdf:type rdf:resource="http://lod.nl.go.kr/ontology/OfflineMaterial"/>
+    <nlon:localHolding>EM524266</nlon:localHolding>
+    <bibframe:place rdf:resource="http://lod.nl.go.kr/countries/si"/>
+    <nlon:datePublished rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2026-10-11T05:05:20</nlon:datePublished>
+    <rdf:type rdf:resource="http://purl.org/ontology/bibo/Book"/>
+    <nlon:editionOfKDC>3</nlon:editionOfKDC>
+    <nlon:publicationPlace>新加坡</nlon:publicationPlace>
+  </nlon:Book>
+  <nlon:Book rdf:about="http://lod.nl.go.kr/resource/CMO000000010">
+    <dc:publisher>書目文獻出版社</dc:publisher>
+    <nlon:classificationNumberOfNLK>017.1212</nlon:classificationNumberOfNLK>
+    <nlon:keyword>진본</nlon:keyword>
+    <nlon:keyword>북경</nlon:keyword>
+    <bibo:isbn>750131201X (20)</bibo:isbn>
+    <dcterms:creator rdf:resource="http://lod.nl.go.kr/resource/KAB202010301"/>
+    <nlon:typeOfData rdf:resource="http://lod.nl.go.kr/resource/dt_gm"/>
+    <nlon:issuedYear>1988</nlon:issuedYear>
+    <nlon:editionOfKDC>3</nlon:editionOfKDC>
+    <nlon:volumeOfNLK>20</nlon:volumeOfNLK>
+    <nlon:keyword>사부</nlon:keyword>
+    <nlon:publicationPlace>北京</nlon:publicationPlace>
+    <bibframe:extent>1084p</bibframe:extent>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=2245669"/>
+    <dcterms:issued>1988</dcterms:issued>
+    <bibo:volume>20</bibo:volume>
+    <nlon:keyword>고적</nlon:keyword>
+    <bibframe:language rdf:resource="http://lod.nl.go.kr/language/chi"/>
+    <nlon:kdc>017.1212</nlon:kdc>
+    <rdf:type rdf:resource="http://lod.nl.go.kr/ontology/OfflineMaterial"/>
+    <bibframe:extent>26cm</bibframe:extent>
+    <dcterms:title>北京圖書館古籍珍本叢刊</dcterms:title>
+    <rdfs:label>北京圖書館古籍珍本叢刊. / 北京圖書館古籍出版編輯組 編</rdfs:label>
+    <dcterms:tableOfContents>使西日記;味水軒日記;孫夏峰先生日譜殘稿;呼桓日記;文文肅公日記;司徒恩遇日記;祁忠敏公日記</dcterms:tableOfContents>
+    <rdf:type rdf:resource="http://purl.org/ontology/bibo/Book"/>
+    <nlon:localHolding>EM1503297, 20</nlon:localHolding>
+    <nlon:keyword>총간</nlon:keyword>
+    <nlon:itemNumberOfNLK>북696ㅂ</nlon:itemNumberOfNLK>
+    <nlon:datePublished rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2026-10-11T05:05:20</nlon:datePublished>
+    <nlon:keyword>전기류</nlon:keyword>
+    <nlon:remainderOfTitle>史部·傳記類</nlon:remainderOfTitle>
+    <bibframe:place rdf:resource="http://lod.nl.go.kr/countries/cc"/>
+    <nlon:keyword>도서관</nlon:keyword>
+  </nlon:Book>
+  <bibo:Book rdf:about="http://lod.nl.go.kr/resource/CMO000000042">
+    <nlon:classificationNumberOfNLK>023</nlon:classificationNumberOfNLK>
+    <nlon:bibliography>參考書目:p.123-130, 색인수록</nlon:bibliography>
+    <dc:creator>후수자오</dc:creator>
+    <nlon:localHolding>EM886739</nlon:localHolding>
+    <dc:publisher>漢美圖書有限公司</dc:publisher>
+    <dc:creator>리더주</dc:creator>
+    <rdfs:label>我國臺灣地區圖書館採訪自動化現況與需求硏究 / 鄭玉玲 著</rdfs:label>
+    <rdf:type rdf:resource="http://lod.nl.go.kr/ontology/Book"/>
+    <bibframe:extent>21cm</bibframe:extent>
+    <dcterms:title>我國臺灣地區圖書館採訪自動化現況與需求硏究</dcterms:title>
+    <rdf:type rdf:resource="http://lod.nl.go.kr/ontology/OfflineMaterial"/>
+    <nlon:kdc>023</nlon:kdc>
+    <nlon:keyword>아국대만지구도서관</nlon:keyword>
+    <nlon:titleOfSeries>圖書館學與資訊科學論文叢刊</nlon:titleOfSeries>
+    <dcterms:description>叢書名編者: 胡述兆 ; 李德竹</dcterms:description>
+    <nlon:datePublished rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2026-10-11T05:05:20</nlon:datePublished>
+    <bibo:isbn>9579005062(平裝)</bibo:isbn>
+    <nlon:typeOfData rdf:resource="http://lod.nl.go.kr/resource/dt_gm"/>
+    <bibframe:language rdf:resource="http://lod.nl.go.kr/language/chi"/>
+    <dcterms:creator rdf:resource="http://lod.nl.go.kr/resource/KAC2020H3683"/>
+    <nlon:keyword>도서관학여자신과학논문총간</nlon:keyword>
+    <dc:creator>정옥령</dc:creator>
+    <bibframe:extent>xii,135p</bibframe:extent>
+    <dcterms:issued>1990</dcterms:issued>
+    <nlon:editionOfKDC>3</nlon:editionOfKDC>
+    <nlon:volumeOfSeries>第1輯</nlon:volumeOfSeries>
+    <nlon:issuedYear>1990</nlon:issuedYear>
+    <dcterms:creator rdf:resource="http://lod.nl.go.kr/resource/KAC200610166"/>
+    <nlon:publicationPlace>臺北</nlon:publicationPlace>
+    <nlon:keyword>채방자동화현황여수구연구</nlon:keyword>
+    <bibframe:place rdf:resource="http://lod.nl.go.kr/countries/ch"/>
+    <nlon:itemNumberOfNLK>정368ㅇ</nlon:itemNumberOfNLK>
+  </bibo:Book>
+  <nlon:Book rdf:about="http://lod.nl.go.kr/resource/CMO000000020">
+    <nlon:remainderOfTitle>西元1945-1989年</nlon:remainderOfTitle>
+    <nlon:issuedYear>1991</nlon:issuedYear>
+    <bibframe:extent>8,440p</bibframe:extent>
+    <rdf:type rdf:resource="http://purl.org/ontology/bibo/Book"/>
+    <nlon:editionOfKDC>3</nlon:editionOfKDC>
+    <nlon:localHolding>EM902774</nlon:localHolding>
+    <owl:sameAs rdf:resource="https://openlibrary.org/books/OL13064759M"/>
+    <nlon:classificationNumberOfNLK>015.124</nlon:classificationNumberOfNLK>
+    <owl:sameAs rdf:resource="https://libris.kb.se/n5zvj6501t2w9rd"/>
+    <nlon:kdc>015.124</nlon:kdc>
+    <nlon:keyword>대만연구요목</nlon:keyword>
+    <dcterms:issued>民國80[1991]</dcterms:issued>
+    <dcterms:title>臺灣硏究要目</dcterms:title>
+    <rdfs:label>臺灣硏究要目 / 黃士旂 編著</rdfs:label>
+    <nlon:publicationPlace>臺北</nlon:publicationPlace>
+    <nlon:datePublished rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2026-10-11T05:05:20</nlon:datePublished>
+    <bibframe:extent>21cm</bibframe:extent>
+    <bibo:isbn>9578523009</bibo:isbn>
+    <nlon:itemNumberOfNLK>황653ㄷ</nlon:itemNumberOfNLK>
+    <owl:sameAs rdf:resource="http://worldcat.org/entity/work/id/27323376"/>
+    <bibframe:language rdf:resource="http://lod.nl.go.kr/language/chi"/>
+    <nlon:typeOfData rdf:resource="http://lod.nl.go.kr/resource/dt_gm"/>
+    <dc:creator>황사기</dc:creator>
+    <dc:publisher>捷幼出版社</dc:publisher>
+    <bibframe:place rdf:resource="http://lod.nl.go.kr/countries/ch"/>
+    <rdf:type rdf:resource="http://lod.nl.go.kr/ontology/OfflineMaterial"/>
+  </nlon:Book>
+</rdf:RDF>

@@ -1,0 +1,623 @@
+<rdf:RDF
+    xmlns:vs="http://www.w3.org/2003/06/sw-vocab-status/ns#"
+    xmlns:nlfloc="http://lod.nl.go.kr/foreignLocation/"
+    xmlns:nlcon="http://lod.nl.go.kr/countries/"
+    xmlns:geo="http://www.w3.org/2003/01/geo/wgs84_pos#"
+    xmlns:nllib="http://lod.nl.go.kr/library/"
+    xmlns:voaf="http://purl.org/vocommons/voaf#"
+    xmlns:nlsc="http://lod.nl.go.kr/scheme/"
+    xmlns:nlloc="http://lod.nl.go.kr/location/"
+    xmlns:dcterms="http://purl.org/dc/terms/"
+    xmlns:bibframe="http://id.loc.gov/ontologies/bibframe/"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:event="http://purl.org/NET/c4dm/event.owl#"
+    xmlns:tmon="http://t-mon/"
+    xmlns:units="http://lod.nl.go.kr/units/"
+    xmlns:skos="http://www.w3.org/2004/02/skos/core#"
+    xmlns:nlgov="http://lod.nl.go.kr/government/"
+    xmlns:nlon="http://lod.nl.go.kr/ontology/"
+    xmlns:vann="http://purl.org/vocab/vann/"
+    xmlns:cc="http://creativecommons.org/ns#"
+    xmlns:org="http://www.w3.org/ns/org#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:nlddc="http://lod.nl.go.kr/ddc/"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:schema="http://schema.org/"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+    xmlns:geonames="http://www.geonames.org/ontology#"
+    xmlns:nluv="http://lod.nl.go.kr/university/"
+    xmlns:nls="http://lod.nl.go.kr/subject/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:bibo="http://purl.org/ontology/bibo/"
+    xmlns:nla="http://lod.nl.go.kr/author/"
+    xmlns:nlkdc="http://lod.nl.go.kr/kdc/"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:nlk="http://lod.nl.go.kr/resource/">
+  <nlon:Book rdf:about="http://lod.nl.go.kr/resource/CMO000000001">
+    <rdf:type rdf:resource="http://lod.nl.go.kr/ontology/OfflineMaterial"/>
+    <bibframe:extent>揷圖</bibframe:extent>
+    <rdfs:label>圖書館學論叢 / 王振鵠 著</rdfs:label>
+    <nlon:classificationNumberOfNLK>010.4</nlon:classificationNumberOfNLK>
+    <nlon:keyword>도서관학여자신과학총서</nlon:keyword>
+    <nlon:titleOfSeries>圖書館學與資訊科學叢書</nlon:titleOfSeries>
+    <nlon:typeOfData rdf:resource="http://lod.nl.go.kr/resource/dt_gm"/>
+    <nlon:editionOfKDC>3</nlon:editionOfKDC>
+    <nlon:kdc>010.4</nlon:kdc>
+    <dcterms:creator rdf:resource="http://lod.nl.go.kr/resource/KAC200702805"/>
+    <dc:publisher>臺灣學生書局</dc:publisher>
+    <nlon:datePublished rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2026-10-11T05:05:20</nlon:datePublished>
+    <nlon:publicationPlace>臺北</nlon:publicationPlace>
+    <bibframe:language rdf:resource="http://lod.nl.go.kr/language/chi"/>
+    <nlon:issuedYear>1984</nlon:issuedYear>
+    <nlon:localHolding>EM721253</nlon:localHolding>
+    <rdf:type rdf:resource="http://purl.org/ontology/bibo/Book"/>
+    <bibframe:extent>21cm</bibframe:extent>
+    <dcterms:title>圖書館學論叢</dcterms:title>
+    <nlon:itemNumberOfNLK>왕919ㄷ</nlon:itemNumberOfNLK>
+    <nlon:keyword>도서관학논총</nlon:keyword>
+    <bibframe:place rdf:resource="http://lod.nl.go.kr/countries/ch"/>
+    <dcterms:description>附錄 : 本書作者著作年表</dcterms:description>
+    <dcterms:issued>民國73[1984]</dcterms:issued>
+    <bibframe:extent>x, 586p</bibframe:extent>
+    <dc:creator>왕전후</dc:creator>
+  </nlon:Book>
+  <nlon:OfflineMaterial rdf:about="http://lod.nl.go.kr/resource/KJU201703899">
+    <nlon:publicationPlace>파주</nlon:publicationPlace>
+    <nlon:issuedYear>2017</nlon:issuedYear>
+    <nlon:kdcn rdf:resource="http://lod.nl.go.kr/kdc/813_e6"/>
+    <nlon:kdc>813.7</nlon:kdc>
+    <nlon:editionOfKDC>6</nlon:editionOfKDC>
+    <nlon:titleOfTranslation>Badem</nlon:titleOfTranslation>
+    <bibframe:extent>20 cm</bibframe:extent>
+    <nlon:classificationNumberOfNLK>813.7</nlon:classificationNumberOfNLK>
+    <nlon:remainderOfTitle>손원평 장편소설</nlon:remainderOfTitle>
+    <nlon:localHolding>JU807402, 2, JU</nlon:localHolding>
+    <nlon:datePublished rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2026-10-11T05:05:20</nlon:datePublished>
+    <dcterms:subject rdf:resource="http://lod.nl.go.kr/resource/KSH2002030019"/>
+    <nlon:localHolding>JU807401</nlon:localHolding>
+    <owl:sameAs rdf:resource="https://libris.kb.se/n2dhx3svl88zf3fq"/>
+    <nlon:typeOfData rdf:resource="http://lod.nl.go.kr/resource/dt_gm"/>
+    <bibframe:language rdf:resource="http://lod.nl.go.kr/language/kor"/>
+    <nlon:translatedAs rdf:resource="http://lod.nl.go.kr/resource/EJU202400429"/>
+    <nlon:awardsNote>제10회 창비청소년문학상</nlon:awardsNote>
+    <dcterms:issued>2017</dcterms:issued>
+    <rdf:type rdf:resource="http://purl.org/ontology/bibo/Book"/>
+    <nlon:translatedAs rdf:resource="http://lod.nl.go.kr/resource/WMO202500480"/>
+    <dcterms:subject rdf:resource="http://lod.nl.go.kr/resource/KSH2014000035"/>
+    <dc:publisher>창비</dc:publisher>
+    <bibo:isbn>9788936434267</bibo:isbn>
+    <rdfs:label>아몬드 / 지은이: 손원평</rdfs:label>
+    <dc:creator>손원평</dc:creator>
+    <owl:sameAs rdf:resource="https://data.nanet.go.kr/resource/NANET_BOK_576693"/>
+    <owl:sameAs rdf:resource="https://openlibrary.org/books/OL42913065M"/>
+    <nlon:itemNumberOfNLK>17-222</nlon:itemNumberOfNLK>
+    <rdf:type rdf:resource="http://lod.nl.go.kr/ontology/Book"/>
+    <bibframe:place rdf:resource="http://lod.nl.go.kr/countries/ggk"/>
+    <dcterms:creator rdf:resource="http://lod.nl.go.kr/resource/KAC201715302"/>
+    <bibframe:extent>263 p</bibframe:extent>
+    <dcterms:title>아몬드</dcterms:title>
+  </nlon:OfflineMaterial>
+  <bibo:Book rdf:about="http://lod.nl.go.kr/resource/KJU201208224">
+    <bibo:isbn>9788961596749 (set)</bibo:isbn>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=8064074"/>
+    <dcterms:issued>2012-2015</dcterms:issued>
+    <nlon:localHolding>JU744250, 36</nlon:localHolding>
+    <dc:creator>임지혜</dc:creator>
+    <nlon:itemNumberOfNLK>1-276</nlon:itemNumberOfNLK>
+    <dcterms:description>권별번역: 35-41. 임지혜</dcterms:description>
+    <nlon:typeOfData rdf:resource="http://lod.nl.go.kr/resource/dt_ca"/>
+    <nlon:localHolding>JU744251, 36, 2</nlon:localHolding>
+    <nlon:localHolding>JU663246, 34, 2</nlon:localHolding>
+    <bibframe:extent>10책</bibframe:extent>
+    <nlon:localHolding>JU744254, 38</nlon:localHolding>
+    <nlon:kdc>830</nlon:kdc>
+    <nlon:localHolding>JU663245, 34</nlon:localHolding>
+    <bibo:isbn>9788961597678 (33)</bibo:isbn>
+    <dcterms:tableOfContents>32. 갸루와 빙어 -- 33. 와카와 몽치다래 -- 34. 조개맛 생선 -- 35. 봄의 색은 하얀색? -- 36. 부흥의 정치망 -- 37. 흰색인가 검은색인가 -- 38. 불굴의 산리쿠 -- 39. 상으로는 게가 최고 -- 40. 돌아온 가다랑어, 헤매는 가다랑어 -- 41. 시라스를 알고 있나</dcterms:tableOfContents>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=8657813"/>
+    <bibo:isbn>9791155124512 (35)</bibo:isbn>
+    <nlon:localHolding>JU744248, 35</nlon:localHolding>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=7011339"/>
+    <rdfs:label>(어시장) 삼대째. / 글: Kuwa Kazuto ; 그림: Hashimoto Mitsuo ;번역: 임지혜</rdfs:label>
+    <bibo:isbn>9791155126240 (38)</bibo:isbn>
+    <nlon:localHolding>JU744253, 37, 2</nlon:localHolding>
+    <dcterms:creator rdf:resource="http://lod.nl.go.kr/resource/KAC200901480"/>
+    <bibo:volume>32-41</bibo:volume>
+    <bibframe:language rdf:resource="http://lod.nl.go.kr/language/kor"/>
+    <nlon:publicationPlace>고양</nlon:publicationPlace>
+    <nlon:localHolding>JU663244, 33, 2</nlon:localHolding>
+    <nlon:localHolding>JU744249, 35, 2</nlon:localHolding>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=7767854"/>
+    <nlon:localHolding>JU744260, 41</nlon:localHolding>
+    <nlon:languageNote>일본어 원작을 한국어로 번역</nlon:languageNote>
+    <bibframe:extent>전부삽화</bibframe:extent>
+    <nlon:volumeOfNLK>32-41</nlon:volumeOfNLK>
+    <bibo:isbn>9791155125915 (37)</bibo:isbn>
+    <dcterms:description>원저자명: 九和かずと, はしもとみつお</dcterms:description>
+    <nlon:localHolding>JU744259, 40, 2</nlon:localHolding>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=7882828"/>
+    <dcterms:description>권말부록: 미츠오 &amp; 카즈토의 취재이야기</dcterms:description>
+    <nlon:localHolding>JU744258, 40</nlon:localHolding>
+    <bibo:isbn>9791155127698 (40)</bibo:isbn>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=8301711"/>
+    <nlon:localHolding>JU634002, 32</nlon:localHolding>
+    <bibo:isbn>9791155125724 (36)</bibo:isbn>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=7039264"/>
+    <bibo:isbn>9791155129012 (41)</bibo:isbn>
+    <dcterms:language rdf:resource="http://id.loc.gov/vocabulary/languages/kor"/>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=8385158"/>
+    <dcterms:creator rdf:resource="http://lod.nl.go.kr/resource/KAC200102793"/>
+    <nlon:localHolding>JU744252, 37</nlon:localHolding>
+    <nlon:localHolding>JU634003, 32, 2</nlon:localHolding>
+    <nlon:issuedYear>2012</nlon:issuedYear>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=6981862"/>
+    <dc:publisher>조은세상</dc:publisher>
+    <nlon:localHolding>JU744255, 38, 2</nlon:localHolding>
+    <nlon:datePublished rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2026-10-11T05:05:20</nlon:datePublished>
+    <bibo:isbn>9791155127117 (39)</bibo:isbn>
+    <bibframe:extent>19 cm</bibframe:extent>
+    <bibo:isbn>9788961597661 (32)</bibo:isbn>
+    <nlon:localHolding>JU744257, 39, 2</nlon:localHolding>
+    <dcterms:alternative>築地魚河岸三代目</dcterms:alternative>
+    <bibo:isbn>9788961597685 (34)</bibo:isbn>
+    <nlon:localHolding>JU744256, 39</nlon:localHolding>
+    <nlon:classificationNumberOfNLK>830</nlon:classificationNumberOfNLK>
+    <nlon:titleOfSeries>King comics</nlon:titleOfSeries>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=8144214"/>
+    <dc:creator>하시모토 미쓰오</dc:creator>
+    <rdf:type rdf:resource="http://lod.nl.go.kr/ontology/OfflineMaterial"/>
+    <rdf:type rdf:resource="http://lod.nl.go.kr/ontology/Book"/>
+    <dcterms:title>(어시장) 삼대째</dcterms:title>
+    <dc:creator>구와 가즈토</dc:creator>
+    <bibframe:place rdf:resource="http://lod.nl.go.kr/countries/ggk"/>
+    <nlon:localHolding>JU663243, 33</nlon:localHolding>
+    <nlon:localHolding>JU744261, 41, 2, JD</nlon:localHolding>
+    <nlon:kdcn rdf:resource="http://lod.nl.go.kr/kdc/830_e5"/>
+    <nlon:editionOfKDC>5</nlon:editionOfKDC>
+  </bibo:Book>
+  <nlon:Book rdf:about="http://lod.nl.go.kr/resource/KJU200607571">
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=4375582"/>
+    <bibo:isbn>9788925842189 (20)</bibo:isbn>
+    <bibo:isbn>9791155971611 (32(완결))</bibo:isbn>
+    <nlon:titleOfSeries>Haksan comics</nlon:titleOfSeries>
+    <bibo:isbn>9788925897912 (28)</bibo:isbn>
+    <bibo:isbn>8952990706 (11)</bibo:isbn>
+    <nlon:localHolding>JU387935, 13, 2</nlon:localHolding>
+    <nlon:localHolding>JU684081, 30</nlon:localHolding>
+    <nlon:issuedYear>2006</nlon:issuedYear>
+    <nlon:localHolding>JU454132, 16, 2</nlon:localHolding>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=6951982"/>
+    <nlon:localHolding>JU674232, 29, 2</nlon:localHolding>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=7019618"/>
+    <bibo:isbn>895298336X (1)</bibo:isbn>
+    <nlon:volumeOfNLK>1-32</nlon:volumeOfNLK>
+    <bibframe:extent>32책</bibframe:extent>
+    <bibo:isbn>9788925847870 (21)</bibo:isbn>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=2499908"/>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=2502844"/>
+    <nlon:localHolding>JU349007, 7, 2</nlon:localHolding>
+    <dcterms:language rdf:resource="http://id.loc.gov/vocabulary/languages/kor"/>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=6264472"/>
+    <nlon:localHolding>JU488608, 18</nlon:localHolding>
+    <nlon:localHolding>JU341900, 2, 2</nlon:localHolding>
+    <nlon:localHolding>JU470819, 17, 2</nlon:localHolding>
+    <nlon:localHolding>JU637874, 27, 2</nlon:localHolding>
+    <nlon:typeOfData rdf:resource="http://lod.nl.go.kr/resource/dt_ca"/>
+    <nlon:localHolding>JU684082, 30, 2</nlon:localHolding>
+    <nlon:localHolding>JU341335, 1, 2</nlon:localHolding>
+    <bibo:isbn>9788968310584 (29)</bibo:isbn>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=6690310"/>
+    <nlon:publicationPlace>서울</nlon:publicationPlace>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=2533437"/>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=7235618"/>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=2506045"/>
+    <nlon:titleOfSeries>학산 코믹스</nlon:titleOfSeries>
+    <bibo:isbn>895298868X (8)</bibo:isbn>
+    <bibframe:language rdf:resource="http://lod.nl.go.kr/language/kor"/>
+    <nlon:localHolding>JU694520, 31</nlon:localHolding>
+    <nlon:localHolding>JU517914, 20, 2</nlon:localHolding>
+    <nlon:itemNumberOfNLK>6-186</nlon:itemNumberOfNLK>
+    <nlon:localHolding>JU353345, 10, 2</nlon:localHolding>
+    <nlon:languageNote>일본어 원작을 한국어로 번역</nlon:languageNote>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=2490560"/>
+    <nlon:localHolding>JU582554, 22</nlon:localHolding>
+    <bibo:isbn>9788925870670 (24)</bibo:isbn>
+    <bibframe:extent>전부삽화</bibframe:extent>
+    <bibo:isbn>8952985206 (3)</bibo:isbn>
+    <nlon:localHolding>JU507108, 19</nlon:localHolding>
+    <dcterms:creator rdf:resource="http://lod.nl.go.kr/resource/KAC200003318"/>
+    <nlon:localHolding>JU349004, 6</nlon:localHolding>
+    <nlon:localHolding>JU569709, 21</nlon:localHolding>
+    <nlon:localHolding>JU341334, 1</nlon:localHolding>
+    <bibo:isbn>9788925894492 (27)</bibo:isbn>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=2512989"/>
+    <dc:publisher>학산문화사</dc:publisher>
+    <bibo:isbn>9788925819273 (16)</bibo:isbn>
+    <nlon:localHolding>JU349005, 6, 2</nlon:localHolding>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=6230790"/>
+    <bibo:isbn>9788925839721 (19)</bibo:isbn>
+    <nlon:localHolding>JU488609, 18, 2</nlon:localHolding>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=6056480"/>
+    <bibo:isbn>9788925858524 (22)</bibo:isbn>
+    <nlon:localHolding>JU674231, 29</nlon:localHolding>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=2524492"/>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=5046464"/>
+    <nlon:localHolding>JU344056, 3, 2</nlon:localHolding>
+    <dcterms:title>카페타</dcterms:title>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=7421225"/>
+    <bibo:isbn>8952993152 (12)</bibo:isbn>
+    <nlon:localHolding>JU710819, 32, 2, JD</nlon:localHolding>
+    <dcterms:issued>2006-2014</dcterms:issued>
+    <nlon:localHolding>JU344059, 5</nlon:localHolding>
+    <nlon:datePublished rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2026-10-11T05:05:20</nlon:datePublished>
+    <nlon:localHolding>JU628141, 25, 2</nlon:localHolding>
+    <nlon:localHolding>JU344055, 3</nlon:localHolding>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=5412133"/>
+    <nlon:editionOfKDC>4</nlon:editionOfKDC>
+    <bibo:isbn>9788925803807 (14)</bibo:isbn>
+    <nlon:localHolding>JU344058, 4, 2</nlon:localHolding>
+    <bibo:isbn>9788968313325 (30)</bibo:isbn>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=2736263"/>
+    <nlon:kdcn rdf:resource="http://lod.nl.go.kr/kdc/830_e4"/>
+    <bibo:isbn>8952983386 (2)</bibo:isbn>
+    <bibo:isbn>9788952997821 (13)</bibo:isbn>
+    <nlon:localHolding>JU601523, 23</nlon:localHolding>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=2525326"/>
+    <bibframe:extent>19 cm</bibframe:extent>
+    <nlon:localHolding>JU351690, 8</nlon:localHolding>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=2538135"/>
+    <nlon:localHolding>JU507109, 19, 2</nlon:localHolding>
+    <nlon:localHolding>JU387934, 13</nlon:localHolding>
+    <bibo:isbn>8952989856 (10)</bibo:isbn>
+    <dcterms:alternative>Capeta</dcterms:alternative>
+    <nlon:localHolding>JU454131, 16</nlon:localHolding>
+    <bibo:isbn>9788925879741 (25)</bibo:isbn>
+    <nlon:localHolding>JU620699, 24, 2</nlon:localHolding>
+    <bibo:isbn>8952986377 (4)</bibo:isbn>
+    <nlon:localHolding>JU353347, 11, 2</nlon:localHolding>
+    <bibo:isbn>9788925822259 (17)</bibo:isbn>
+    <nlon:localHolding>JU582555, 22, 2</nlon:localHolding>
+    <nlon:localHolding>JU470818, 17</nlon:localHolding>
+    <nlon:localHolding>JU411767, 14, 2</nlon:localHolding>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=7660293"/>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=6603020"/>
+    <nlon:localHolding>JU663227, 28</nlon:localHolding>
+    <rdfs:label>카페타 / 저자: Masahito Soda ; 역자: 서현아</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=6970792"/>
+    <dc:creator>서현아</dc:creator>
+    <bibo:isbn>9788925811925 (15)</bibo:isbn>
+    <bibo:isbn>8952986385 (5)</bibo:isbn>
+    <nlon:localHolding>JU663228, 28, 2</nlon:localHolding>
+    <nlon:localHolding>JU601524, 23, 2</nlon:localHolding>
+    <rdf:type rdf:resource="http://lod.nl.go.kr/ontology/OfflineMaterial"/>
+    <bibo:isbn>9788952983374 (세트)</bibo:isbn>
+    <dc:creator>소다 마사히토</dc:creator>
+    <nlon:localHolding>JU352532, 9</nlon:localHolding>
+    <nlon:localHolding>JU411766, 14</nlon:localHolding>
+    <nlon:localHolding>JU351691, 8, 2</nlon:localHolding>
+    <nlon:kdc>830</nlon:kdc>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=2512990"/>
+    <bibo:isbn>9788968319914 (31)</bibo:isbn>
+    <bibo:isbn>9788925894485 (26)</bibo:isbn>
+    <nlon:localHolding>JU628140, 25</nlon:localHolding>
+    <bibo:isbn>8952987403 (7)</bibo:isbn>
+    <nlon:localHolding>JU710818, 32</nlon:localHolding>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=6853756"/>
+    <bibframe:place rdf:resource="http://lod.nl.go.kr/countries/ulk"/>
+    <bibo:isbn>9788925864495 (23)</bibo:isbn>
+    <nlon:localHolding>JU353346, 11</nlon:localHolding>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=2487908"/>
+    <nlon:localHolding>JU344060, 5, 2</nlon:localHolding>
+    <nlon:localHolding>JU368394, 12, 2</nlon:localHolding>
+    <nlon:localHolding>JU517913, 20</nlon:localHolding>
+    <nlon:localHolding>JU349006, 7</nlon:localHolding>
+    <bibo:isbn>895298739X (6)</bibo:isbn>
+    <nlon:localHolding>JU368393, 12</nlon:localHolding>
+    <nlon:localHolding>JU344057, 4</nlon:localHolding>
+    <bibo:isbn>9788925831770 (18)</bibo:isbn>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=6769393"/>
+    <nlon:localHolding>JU637873, 27</nlon:localHolding>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=7176817"/>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=7333700"/>
+    <dcterms:description>원저자명: 曽田正人</dcterms:description>
+    <nlon:localHolding>JU353344, 10</nlon:localHolding>
+    <rdf:type rdf:resource="http://purl.org/ontology/bibo/Book"/>
+    <bibo:isbn>8952988698 (9)</bibo:isbn>
+    <nlon:localHolding>JU429182, 15</nlon:localHolding>
+    <nlon:localHolding>JU352533, 9, 2</nlon:localHolding>
+    <nlon:localHolding>JU429183, 15, 2</nlon:localHolding>
+    <nlon:localHolding>JU620698, 24</nlon:localHolding>
+    <nlon:localHolding>JU634129, 26, 2</nlon:localHolding>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=6840575"/>
+    <nlon:classificationNumberOfNLK>830</nlon:classificationNumberOfNLK>
+    <nlon:localHolding>JU569710, 21, 2</nlon:localHolding>
+    <nlon:localHolding>JU694521, 31, 2</nlon:localHolding>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=4609109"/>
+    <nlon:localHolding>JU341899, 2</nlon:localHolding>
+    <nlon:localHolding>JU634128, 26</nlon:localHolding>
+  </nlon:Book>
+  <bibo:Book rdf:about="http://lod.nl.go.kr/resource/KJU201108521">
+    <nlon:localHolding>JU579579, 2, JD</nlon:localHolding>
+    <nlon:classificationNumberOfNLK>830</nlon:classificationNumberOfNLK>
+    <dc:creator>정효진</dc:creator>
+    <nlon:languageNote>일본어 원작을 한국어로 번역</nlon:languageNote>
+    <dcterms:alternative>after school</dcterms:alternative>
+    <nlon:kdcn rdf:resource="http://lod.nl.go.kr/kdc/830_e5"/>
+    <nlon:kdc>830</nlon:kdc>
+    <dcterms:alternative>花ざかりの君たちへ</dcterms:alternative>
+    <nlon:issuedYear>2011</nlon:issuedYear>
+    <dcterms:creator rdf:resource="http://lod.nl.go.kr/resource/KAC200000605"/>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=6653158"/>
+    <nlon:publicationPlace>서울</nlon:publicationPlace>
+    <bibo:isbn>9788926318874</bibo:isbn>
+    <dc:publisher>서울문화사</dc:publisher>
+    <bibframe:extent>171 p</bibframe:extent>
+    <nlon:localHolding>JU579578</nlon:localHolding>
+    <dcterms:issued>2011</dcterms:issued>
+    <bibo:isbn>9791189431907 (세트)</bibo:isbn>
+    <nlon:datePublished rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2026-10-11T05:05:20</nlon:datePublished>
+    <rdfs:label>아름다운 그대에게 / 글·그림: Hisaya Nakajo ; 옮긴이: 정효진</rdfs:label>
+    <nlon:itemNumberOfNLK>11-47</nlon:itemNumberOfNLK>
+    <bibframe:language rdf:resource="http://lod.nl.go.kr/language/kor"/>
+    <dc:creator>나카조 히사야</dc:creator>
+    <rdf:type rdf:resource="http://lod.nl.go.kr/ontology/Book"/>
+    <rdf:type rdf:resource="http://lod.nl.go.kr/ontology/OfflineMaterial"/>
+    <nlon:remainderOfTitle>after school</nlon:remainderOfTitle>
+    <nlon:editionOfKDC>5</nlon:editionOfKDC>
+    <nlon:typeOfData rdf:resource="http://lod.nl.go.kr/resource/dt_ca"/>
+    <bibframe:place rdf:resource="http://lod.nl.go.kr/countries/ulk"/>
+    <dcterms:description>원저자명: 中条 比紗也</dcterms:description>
+    <bibframe:extent>전부삽화</bibframe:extent>
+    <bibo:identifier>UB20100126196</bibo:identifier>
+    <dcterms:language rdf:resource="http://id.loc.gov/vocabulary/languages/kor"/>
+    <bibframe:extent>19 m</bibframe:extent>
+    <nlon:titleOfSeries>Wink collection</nlon:titleOfSeries>
+    <dcterms:title>아름다운 그대에게</dcterms:title>
+  </bibo:Book>
+  <bibo:Book rdf:about="http://lod.nl.go.kr/resource/KJU201211257">
+    <bibframe:extent>6책</bibframe:extent>
+    <nlon:localHolding>JU696534, 3, 2</nlon:localHolding>
+    <nlon:localHolding>JU824295, 6, 2, JU</nlon:localHolding>
+    <nlon:classificationNumberOfNLK>367</nlon:classificationNumberOfNLK>
+    <bibframe:extent>전부천연색삽화</bibframe:extent>
+    <bibframe:language rdf:resource="http://lod.nl.go.kr/language/kor"/>
+    <nlon:kdc>367</nlon:kdc>
+    <bibo:isbn>9791160860061 (6)</bibo:isbn>
+    <bibo:isbn>9788993171709 (3)</bibo:isbn>
+    <nlon:publicationPlace>서울</nlon:publicationPlace>
+    <bibo:isbn>9788993171440 (세트)</bibo:isbn>
+    <nlon:localHolding>JU696536, 4, 2</nlon:localHolding>
+    <nlon:localHolding>JU824292, 5</nlon:localHolding>
+    <dcterms:title>(바로미와 함께하는) 좌충우돌 재판이야기</dcterms:title>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=7443339"/>
+    <dcterms:issued>2012-2017</dcterms:issued>
+    <nlon:issuedYear>2012</nlon:issuedYear>
+    <bibo:isbn>9788993171464 (2)</bibo:isbn>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=11808348"/>
+    <bibframe:place rdf:resource="http://lod.nl.go.kr/countries/ulk"/>
+    <nlon:localHolding>JU639545, 1, 2</nlon:localHolding>
+    <nlon:localHolding>JU824294, 6</nlon:localHolding>
+    <nlon:datePublished rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2026-10-11T05:05:20</nlon:datePublished>
+    <nlon:volumeOfNLK>1-6</nlon:volumeOfNLK>
+    <nlon:localHolding>JU639544, 1</nlon:localHolding>
+    <bibo:isbn>9788993171716 (4)</bibo:isbn>
+    <nlon:localHolding>JU639546, 2</nlon:localHolding>
+    <rdfs:label>(바로미와 함께하는) 좌충우돌 재판이야기. / 글: 서울교육대학교 법교육연구소 ; 그림: 극동만화연구소</rdfs:label>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=6807842"/>
+    <nlon:typeOfData rdf:resource="http://lod.nl.go.kr/resource/dt_gm"/>
+    <bibo:volume>1-6</bibo:volume>
+    <dcterms:creator rdf:resource="http://lod.nl.go.kr/resource/KAB201733520"/>
+    <bibo:isbn>9788993171457 (1)</bibo:isbn>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=11808349"/>
+    <nlon:localHolding>JU824293, 5, 2</nlon:localHolding>
+    <bibframe:extent>26 cm</bibframe:extent>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=7443340"/>
+    <rdf:type rdf:resource="http://lod.nl.go.kr/ontology/OfflineMaterial"/>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=6807843"/>
+    <nlon:editionOfKDC>5</nlon:editionOfKDC>
+    <nlon:localHolding>JU639547, 2, 2</nlon:localHolding>
+    <nlon:localHolding>JU696535, 4</nlon:localHolding>
+    <rdf:type rdf:resource="http://lod.nl.go.kr/ontology/Book"/>
+    <dc:publisher>사법발전재단</dc:publisher>
+    <bibo:isbn>9791160860054 (5)</bibo:isbn>
+    <nlon:kdcn rdf:resource="http://lod.nl.go.kr/kdc/367_e5"/>
+    <nlon:localHolding>JU696533, 3</nlon:localHolding>
+    <nlon:itemNumberOfNLK>12-4</nlon:itemNumberOfNLK>
+    <dcterms:subject rdf:resource="http://lod.nl.go.kr/resource/KSH1998002393"/>
+  </bibo:Book>
+  <nlon:OfflineMaterial rdf:about="http://lod.nl.go.kr/resource/CMO202503241">
+    <bibframe:place rdf:resource="http://lod.nl.go.kr/countries/cc"/>
+    <dcterms:issued>2019</dcterms:issued>
+    <dcterms:subject rdf:resource="http://lod.nl.go.kr/resource/KSH2000015970"/>
+    <bibframe:language rdf:resource="http://lod.nl.go.kr/language/kor"/>
+    <nlon:governmentPublisher rdf:resource="http://lod.nl.go.kr/government/WA"/>
+    <bibframe:extent>116 p</bibframe:extent>
+    <nlon:volumeOfSeries>19-006</nlon:volumeOfSeries>
+    <nlon:issuedYear>2019</nlon:issuedYear>
+    <nlon:datePublished rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2026-10-11T05:05:20</nlon:datePublished>
+    <nlon:typeOfData rdf:resource="http://lod.nl.go.kr/resource/dt_gm"/>
+    <nlon:uniformTitleOfSeries>KOTRA자료</nlon:uniformTitleOfSeries>
+    <dc:publisher>KOTRA 베이징무역관</dc:publisher>
+    <nlon:kdc>326.23</nlon:kdc>
+    <nlon:titleOfSeries>KOTRA자료</nlon:titleOfSeries>
+    <rdf:type rdf:resource="http://lod.nl.go.kr/ontology/Book"/>
+    <bibframe:extent>30 cm</bibframe:extent>
+    <nlon:localHolding>EM8977587, 2, GP</nlon:localHolding>
+    <dcterms:subject rdf:resource="http://lod.nl.go.kr/resource/KSH2000017723"/>
+    <rdf:type rdf:resource="http://purl.org/ontology/bibo/Book"/>
+    <nlon:editionOfDDC>23</nlon:editionOfDDC>
+    <nlon:kdcn rdf:resource="http://lod.nl.go.kr/kdc/326_e6"/>
+    <nlon:itemNumberOfNLK>25-2</nlon:itemNumberOfNLK>
+    <nlon:ddc>382.1</nlon:ddc>
+    <nlon:classificationNumberOfNLK>326.23</nlon:classificationNumberOfNLK>
+    <dcterms:description>권말부록: 중국 통관서류 예시</dcterms:description>
+    <dcterms:title>중국 수출 통관가이드 유망품목 25選</dcterms:title>
+    <nlon:localHolding>EM8977586</nlon:localHolding>
+    <nlon:publicationPlace>北京</nlon:publicationPlace>
+    <nlon:editionOfKDC>6</nlon:editionOfKDC>
+    <bibframe:extent>천연색삽화</bibframe:extent>
+    <rdfs:label>중국 수출 통관가이드 유망품목 25選 / KOTRA 베이징무역관 [편]</rdfs:label>
+    <bibo:isbn>9791160979053</bibo:isbn>
+  </nlon:OfflineMaterial>
+  <nlon:Book rdf:about="http://lod.nl.go.kr/resource/KJU200803205">
+    <nlon:kdcn rdf:resource="http://lod.nl.go.kr/kdc/490_e6"/>
+    <bibframe:language rdf:resource="http://lod.nl.go.kr/language/kor"/>
+    <nlon:editionOfKDC>6</nlon:editionOfKDC>
+    <dcterms:alternative>discovering animals</dcterms:alternative>
+    <dcterms:description>원저자명: Maria Ana Peixe Dias, Inês Teixeira do Rosário, Bernardo P. Carvalho</dcterms:description>
+    <dcterms:alternative>Là fuori</dcterms:alternative>
+    <dc:creator>Rosario, Ines Teixeira do</dc:creator>
+    <dcterms:creator rdf:resource="http://lod.nl.go.kr/resource/KAC201757972"/>
+    <dcterms:creator rdf:resource="http://lod.nl.go.kr/resource/KAC201113499"/>
+    <nlon:publicationPlace>서울</nlon:publicationPlace>
+    <bibframe:extent>27 cm</bibframe:extent>
+    <dcterms:subject rdf:resource="http://lod.nl.go.kr/resource/KSH1998016414"/>
+    <dcterms:issued>2019</dcterms:issued>
+    <dc:creator>Carvalho, Bernardo P</dc:creator>
+    <nlon:itemNumberOfNLK>19-18</nlon:itemNumberOfNLK>
+    <dcterms:creator rdf:resource="http://lod.nl.go.kr/resource/KAC2019G2914"/>
+    <rdfs:label>어린 산책자를 위한 아름다운 동물 도감 / 마리아 아나 페이시 디아스, 이네스 테이셰이라 도 로사리오 지음 ;베르나르두 P. 카르발류 그림 ;손영인 옮김</rdfs:label>
+    <bibo:isbn>9791190337045</bibo:isbn>
+    <nlon:localHolding>JU415904, 2, JU</nlon:localHolding>
+    <nlon:kdc>490</nlon:kdc>
+    <nlon:classificationNumberOfNLK>490</nlon:classificationNumberOfNLK>
+    <nlon:localHolding>JU415903</nlon:localHolding>
+    <bibframe:place rdf:resource="http://lod.nl.go.kr/countries/ulk"/>
+    <nlon:typeOfData rdf:resource="http://lod.nl.go.kr/resource/dt_gm"/>
+    <bibframe:extent>삽화</bibframe:extent>
+    <nlon:awardsNote>볼로냐 라가치 상 오페라 프리마 부문 대상</nlon:awardsNote>
+    <bibo:isbn>9791190337038</bibo:isbn>
+    <rdf:type rdf:resource="http://purl.org/ontology/bibo/Book"/>
+    <rdf:type rdf:resource="http://lod.nl.go.kr/ontology/OfflineMaterial"/>
+    <dcterms:alternative>중역어번역표제</dcterms:alternative>
+    <dcterms:language rdf:resource="http://id.loc.gov/vocabulary/languages/kor"/>
+    <bibframe:extent>189 p</bibframe:extent>
+    <nlon:datePublished rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2026-10-11T05:05:20</nlon:datePublished>
+    <nlon:languageNote>영어로 번역된 포르투갈어 원작을 한국어로 중역</nlon:languageNote>
+    <nlon:issuedYear>2019</nlon:issuedYear>
+    <dc:publisher>우리학교</dc:publisher>
+    <dcterms:creator rdf:resource="http://lod.nl.go.kr/resource/KAC2019G2912"/>
+    <dcterms:alternative>Outside</dcterms:alternative>
+    <dc:creator>Dias, Maria Ana Peixe</dc:creator>
+    <dcterms:title>어린 산책자를 위한 아름다운 동물 도감</dcterms:title>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=4372632"/>
+    <nlon:bibliography>연대표 수록</nlon:bibliography>
+    <dc:creator>손영인</dc:creator>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=4372633"/>
+    <dcterms:alternative>guida alla scoperta della natura</dcterms:alternative>
+  </nlon:Book>
+  <nlon:Book rdf:about="http://lod.nl.go.kr/resource/KJU200801614">
+    <nlon:localHolding>JU427146, 4, 2</nlon:localHolding>
+    <nlon:localHolding>JU507098, 9</nlon:localHolding>
+    <nlon:localHolding>JU411950, 1</nlon:localHolding>
+    <nlon:localHolding>JU411952, 2</nlon:localHolding>
+    <nlon:localHolding>JU532269, 10, 2</nlon:localHolding>
+    <nlon:localHolding>JU694486, 16</nlon:localHolding>
+    <nlon:localHolding>JU451375, 5, 2</nlon:localHolding>
+    <bibframe:extent>18 cm</bibframe:extent>
+    <nlon:languageNote>일본어 원작을 한국어로 번역</nlon:languageNote>
+    <nlon:localHolding>JU651365, 14</nlon:localHolding>
+    <nlon:localHolding>JU557111, 11</nlon:localHolding>
+    <nlon:localHolding>JU710810, 17</nlon:localHolding>
+    <nlon:localHolding>JU694487, 16, 2</nlon:localHolding>
+    <bibo:isbn>9788925807164 (제4권)</bibo:isbn>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=6337494"/>
+    <nlon:localHolding>JU451374, 5</nlon:localHolding>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=5271876"/>
+    <dcterms:alternative>乙男</dcterms:alternative>
+    <nlon:localHolding>JU411951, 1, 2</nlon:localHolding>
+    <nlon:localHolding>JU411953, 2, 2</nlon:localHolding>
+    <bibo:isbn>9788925814094 (제5권)</bibo:isbn>
+    <dcterms:issued>2007-2014</dcterms:issued>
+    <nlon:localHolding>JU684070, 15, 2</nlon:localHolding>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=6224896"/>
+    <bibo:isbn>9788925838557 (제9권)</bibo:isbn>
+    <nlon:localHolding>JU482297, 7</nlon:localHolding>
+    <nlon:kdcn rdf:resource="http://lod.nl.go.kr/kdc/830_e4"/>
+    <bibo:isbn>9788925819037 (제6권)</bibo:isbn>
+    <bibo:volume>제1권-제18권</bibo:volume>
+    <bibo:isbn>9791155973431 (제18권)</bibo:isbn>
+    <nlon:localHolding>JU651366, 14, 2</nlon:localHolding>
+    <nlon:kdc>830</nlon:kdc>
+    <nlon:localHolding>JU507099, 9, 2</nlon:localHolding>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=6187711"/>
+    <nlon:localHolding>JU727259, 18, 2, JD</nlon:localHolding>
+    <nlon:localHolding>JU532268, 10</nlon:localHolding>
+    <nlon:localHolding>JU710811, 17, 2</nlon:localHolding>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=7400689"/>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=4300436"/>
+    <nlon:volumeOfNLK>1-18</nlon:volumeOfNLK>
+    <bibframe:extent>전부삽화</bibframe:extent>
+    <bibo:isbn>9788925889436 (제15권)</bibo:isbn>
+    <bibo:isbn>9788925826615 (제7권)</bibo:isbn>
+    <bibo:isbn>9788925846484 (제10권)</bibo:isbn>
+    <bibo:isbn>9788925884233 (제14권)</bibo:isbn>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=4584224"/>
+    <nlon:localHolding>JU684069, 15</nlon:localHolding>
+    <nlon:editionOfKDC>4</nlon:editionOfKDC>
+    <bibframe:extent>18책</bibframe:extent>
+    <nlon:localHolding>JU427145, 4</nlon:localHolding>
+    <bibo:isbn>9788925807157 (제3권)</bibo:isbn>
+    <bibo:isbn>9788925896755 (제16권)</bibo:isbn>
+    <rdf:type rdf:resource="http://purl.org/ontology/bibo/Book"/>
+    <dc:publisher>학산문화사</dc:publisher>
+    <nlon:datePublished rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime"
+    >2026-10-11T05:05:20</nlon:datePublished>
+    <rdfs:label>오토멘. / 저자: Aya Kanno ; 역자: 서현아</rdfs:label>
+    <nlon:localHolding>JU620692, 13</nlon:localHolding>
+    <nlon:localHolding>JU501452, 8, 2</nlon:localHolding>
+    <dcterms:creator rdf:resource="http://lod.nl.go.kr/resource/KAC200804868"/>
+    <dcterms:title>오토멘</dcterms:title>
+    <nlon:localHolding>JU591667, 12</nlon:localHolding>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=6048315"/>
+    <bibo:isbn>9788925874418 (제13권)</bibo:isbn>
+    <nlon:localHolding>JU620693, 13, 2</nlon:localHolding>
+    <nlon:localHolding>JU425242, 3</nlon:localHolding>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=6458188"/>
+    <nlon:issuedYear>2007</nlon:issuedYear>
+    <nlon:localHolding>JU460549, 6</nlon:localHolding>
+    <dcterms:language rdf:resource="http://id.loc.gov/vocabulary/languages/kor"/>
+    <nlon:localHolding>JU591668, 12, 2</nlon:localHolding>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=7658922"/>
+    <nlon:localHolding>JU460550, 6, 2</nlon:localHolding>
+    <nlon:classificationNumberOfNLK>830</nlon:classificationNumberOfNLK>
+    <bibo:isbn>9788925802558 (세트)</bibo:isbn>
+    <bibo:isbn>9788968310331 (제17권)</bibo:isbn>
+    <nlon:localHolding>JU501451, 8</nlon:localHolding>
+    <nlon:titleOfSeries>May queen comics</nlon:titleOfSeries>
+    <rdf:type rdf:resource="http://lod.nl.go.kr/ontology/OfflineMaterial"/>
+    <nlon:typeOfData rdf:resource="http://lod.nl.go.kr/resource/dt_ca"/>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=7123358"/>
+    <nlon:localHolding>JU482298, 7, 2</nlon:localHolding>
+    <bibo:isbn>9788925864297 (제12권)</bibo:isbn>
+    <bibo:isbn>9788925802541 (제1권)</bibo:isbn>
+    <dc:creator>간노 아야</dc:creator>
+    <bibo:isbn>9788925858418 (제11권)</bibo:isbn>
+    <bibo:isbn>9788925802565 (제2권)</bibo:isbn>
+    <bibframe:place rdf:resource="http://lod.nl.go.kr/countries/ulk"/>
+    <bibo:isbn>9788925836164 (제8권)</bibo:isbn>
+    <nlon:localHolding>JU557112, 11, 2</nlon:localHolding>
+    <dc:creator>서현아</dc:creator>
+    <bibframe:language rdf:resource="http://lod.nl.go.kr/language/kor"/>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=6735469"/>
+    <nlon:itemNumberOfNLK>8-14</nlon:itemNumberOfNLK>
+    <nlon:localHolding>JU425243, 3, 2</nlon:localHolding>
+    <nlon:publicationPlace>서울</nlon:publicationPlace>
+    <nlon:localHolding>JU727258, 18</nlon:localHolding>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=6859327"/>
+    <dcterms:description>원저자명: 菅野文</dcterms:description>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=7335791"/>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=4514153"/>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=4923733"/>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=8337392"/>
+    <rdfs:seeAlso rdf:resource="http://book.naver.com/bookdb/book_detail.php?bid=4300437"/>
+  </nlon:Book>
+</rdf:RDF>
