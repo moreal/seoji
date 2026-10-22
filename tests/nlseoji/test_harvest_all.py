@@ -99,3 +99,42 @@ def test_reports_progress_per_page(db, make_client):
         db, client, page_size=3, on_page=lambda page, size, total: seen.append((page, size, total))
     )
     assert seen == [(1, 3, 8), (2, 3, 8), (3, 3, 8)]
+
+
+BAD_OFFSET = 4
+API_ERROR = {"resultCode": "105", "resultMsg": "ERROR-API ERROR"}
+
+
+def failing_at_offset(request: httpx.Request) -> httpx.Response:
+    page, size = int(request.url.params["page_no"]), int(request.url.params["page_size"])
+    if (page - 1) * size <= BAD_OFFSET < page * size:
+        return httpx.Response(200, json=API_ERROR)
+    return paging(request)
+
+
+def test_bad_record_is_isolated_and_skipped(db, make_client):
+    client, requests, _ = make_client(failing_at_offset)
+    stats = harvest_all(db, client, page_size=4)
+    assert stats.skipped == 1
+    stored = db.execute("SELECT count(*) AS n FROM bronze.source_record").fetchone()["n"]
+    assert stored == len(DOCS) - 1
+    skip = db.execute("SELECT * FROM bronze.harvest_skip").fetchone()
+    assert (skip["record_offset"], skip["error_code"]) == (BAD_OFFSET, "105")
+    c = cursor(db)
+    assert (c["page_no"], c["page_size"]) == (2, 4) and c["completed_at"] is not None
+
+
+def test_empty_page_before_the_end_is_not_completion(db, make_client):
+    served_empty = []
+
+    def handler(request):
+        if request.url.params["page_no"] == "2" and not served_empty:
+            served_empty.append(True)
+            return httpx.Response(200, json={"PAGE_NO": "2", "TOTAL_COUNT": "0", "docs": []})
+        return paging(request)
+
+    client, _, _ = make_client(handler)
+    harvest_all(db, client, page_size=3)
+    stored = db.execute("SELECT count(*) AS n FROM bronze.source_record").fetchone()["n"]
+    assert stored == len(DOCS)
+    assert cursor(db)["page_no"] == 3

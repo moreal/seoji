@@ -93,6 +93,8 @@ class SeojiClient:
             if code in FATAL_CODES:
                 raise FatalSeojiError(code, message)
             raise SeojiError(code, message)
+        if "resultCode" in raw and "docs" not in raw:  # a second error envelope seen in practice
+            raise SeojiError(str(raw["resultCode"]), str(raw.get("resultMsg", "")))
         return SeojiPage(
             total_count=int(raw.get("TOTAL_COUNT") or 0),
             page_no=int(raw.get("PAGE_NO") or public.get("page_no", 1)),

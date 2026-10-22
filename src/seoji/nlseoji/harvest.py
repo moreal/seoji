@@ -10,7 +10,14 @@ from psycopg.types.json import Jsonb
 
 from seoji.locks import lock_bronze_shared
 from seoji.model import CandidateRecord, InvalidIsbn
-from seoji.nlseoji.client import SEOJI_URL, PageSizeTooLarge, SeojiClient, SeojiPage
+from seoji.nlseoji.client import (
+    SEOJI_URL,
+    FatalSeojiError,
+    PageSizeTooLarge,
+    SeojiClient,
+    SeojiError,
+    SeojiPage,
+)
 from seoji.nlseoji.mapping import map_seoji_doc
 
 SOURCE = "nlseoji"
@@ -26,6 +33,7 @@ class HarvestStats:
     changed: int = 0
     invalid: int = 0
     total_count: int = 0
+    skipped: int = 0
 
 
 def _sha256(obj) -> bytes:
@@ -133,14 +141,51 @@ def harvest_range(
     return stats
 
 
-def _resume_page(conn: psycopg.Connection, page_size: int, restart: bool) -> int:
-    """Page to fetch first: the last committed page again (it may have been partial)."""
+def _resume(conn: psycopg.Connection, page_size: int, restart: bool) -> tuple[int, int | None]:
+    """Record offset to fetch first (the last committed page again) and the last known total."""
     row = conn.execute(
-        "SELECT page_no, page_size FROM bronze.harvest_cursor WHERE name = %s", (ALL_CURSOR,)
+        "SELECT page_no, page_size, total_count FROM bronze.harvest_cursor WHERE name = %s",
+        (ALL_CURSOR,),
     ).fetchone()
     if restart or row is None:
-        return 1
-    return (row["page_no"] - 1) * row["page_size"] // page_size + 1
+        return 0, None
+    offset = (row["page_no"] - 1) * row["page_size"]
+    return offset - offset % page_size, row["total_count"] or None
+
+
+def _fetch_block(
+    conn, client: SeojiClient, offset: int, size: int, total: int | None, stats: HarvestStats
+) -> int | None:
+    """Fetch records [offset, offset+size). A failing block is split tenfold down to single
+    records; a single record that still fails is skipped and logged. Returns TOTAL_COUNT."""
+    stats.requests += 1
+    try:
+        page = client.search(
+            page_no=offset // size + 1, page_size=size, sort="INPUT_DATE", order_by="ASC"
+        )
+        if not page.docs and page.total_count == 0 and total and offset < total:
+            raise SeojiError("empty", "empty page before the known end")
+    except (PageSizeTooLarge, FatalSeojiError):
+        raise
+    except SeojiError as e:
+        if size == 1:
+            conn.execute(
+                "INSERT INTO bronze.harvest_skip (name, record_offset, error_code, message)"
+                " VALUES (%s, %s, %s, %s) ON CONFLICT (name, record_offset) DO UPDATE SET"
+                " error_code = EXCLUDED.error_code, message = EXCLUDED.message,"
+                " skipped_at = now()",
+                (ALL_CURSOR, offset, e.code, e.message),
+            )
+            stats.skipped += 1
+            return None
+        sub = max(1, size // 10)
+        for start in range(offset, offset + size, sub):
+            if total is not None and start >= total:
+                break
+            total = _fetch_block(conn, client, start, sub, total, stats) or total
+        return total
+    _store_page(conn, page, stats)
+    return page.total_count
 
 
 def harvest_all(
@@ -158,26 +203,23 @@ def harvest_all(
     finished run can be repeated to pick up the tail.
     """
     stats = HarvestStats()
-    page_no = _resume_page(conn, page_size, restart)
+    offset, total = _resume(conn, page_size, restart)
     fetched = 0
     while max_pages is None or fetched < max_pages:
         lock_bronze_shared(conn)
         try:
-            page = client.search(
-                page_no=page_no, page_size=page_size, sort="INPUT_DATE", order_by="ASC"
-            )
+            reported = _fetch_block(conn, client, offset, page_size, total, stats)
         except PageSizeTooLarge:
             conn.rollback()
             if page_size <= MIN_PAGE_SIZE:
                 raise
-            offset = (page_no - 1) * page_size
             page_size = max(MIN_PAGE_SIZE, page_size // 2)
-            page_no = offset // page_size + 1
-            stats.requests += 1
+            offset -= offset % page_size
             continue
-        stats.requests += 1
-        _store_page(conn, page, stats)
-        done = not page.docs or page_no * page_size >= page.total_count
+        if reported:
+            total = reported
+        page_no = offset // page_size + 1
+        done = total is not None and page_no * page_size >= total
         conn.execute(
             "INSERT INTO bronze.harvest_cursor (name, page_no, page_size, total_count, updated_at,"
             " completed_at) VALUES (%(name)s, %(page)s, %(size)s, %(total)s, now(),"
@@ -185,15 +227,15 @@ def harvest_all(
             " ON CONFLICT (name) DO UPDATE SET page_no = EXCLUDED.page_no,"
             " page_size = EXCLUDED.page_size, total_count = EXCLUDED.total_count,"
             " updated_at = EXCLUDED.updated_at, completed_at = EXCLUDED.completed_at",
-            {"name": ALL_CURSOR, "page": page_no, "size": page_size,
-             "total": page.total_count, "done": done},
+            {"name": ALL_CURSOR, "page": page_no, "size": page_size, "total": total,
+             "done": done},
         )  # fmt: skip
         conn.commit()
-        stats.total_count = page.total_count
+        stats.total_count = total or 0
         if on_page:
-            on_page(page_no, page_size, page.total_count)
+            on_page(page_no, page_size, total or 0)
         fetched += 1
         if done:
             break
-        page_no += 1
+        offset += page_size
     return stats

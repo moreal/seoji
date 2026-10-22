@@ -84,3 +84,11 @@ def test_non_json_body_is_retried_then_reported(make_client):
         client.search(page_no=1, page_size=2)
     assert len(requests) == 4
     assert "test-key" not in str(e.value)
+
+
+def test_result_code_envelope_is_an_error(make_client):
+    body = {"resultCode": "105", "resultMsg": "ERROR-API ERROR"}
+    client, _, _ = make_client(lambda r: httpx.Response(200, json=body))
+    with pytest.raises(SeojiError) as e:
+        client.search(page_no=387, page_size=1000)
+    assert (e.value.code, e.value.message) == ("105", "ERROR-API ERROR")
