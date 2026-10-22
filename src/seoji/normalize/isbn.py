@@ -65,3 +65,12 @@ def parse_isbn_value(raw: str) -> IsbnValue | None:
 
 def split_isbn_list(raw: str) -> list[str]:
     return [t for t in _SPLIT.split(raw) if t]
+
+
+def isbn13_to_10(isbn13: str) -> str | None:
+    """ISBN-10 exists only for the 978 prefix."""
+    if not isbn13.startswith("978"):
+        return None
+    body = isbn13[3:12]
+    check = (11 - sum(int(d) * w for d, w in zip(body, range(10, 1, -1), strict=True)) % 11) % 11
+    return body + ("X" if check == 10 else str(check))

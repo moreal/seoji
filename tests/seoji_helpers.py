@@ -6,7 +6,7 @@ import pytest
 
 from seoji.nlseoji.client import SeojiClient
 
-FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "nlseoji"
+FIXTURES = Path(__file__).resolve().parent / "fixtures" / "nlseoji"
 
 
 def fixture(name: str) -> dict:

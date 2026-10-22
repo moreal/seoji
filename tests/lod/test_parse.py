@@ -1,5 +1,5 @@
 from seoji.lod.parse import body_hash, iter_resources
-from tests.lod.conftest import NLK, SAMPLE_KR
+from tests.lod_helpers import NLK, SAMPLE_KR
 
 ISBN = "http://purl.org/ontology/bibo/isbn"
 SUBJECT = "http://purl.org/dc/terms/subject"

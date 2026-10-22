@@ -1,5 +1,5 @@
 from seoji.lod.load import load_dump
-from tests.lod.conftest import NLK, SAMPLE_KR
+from tests.lod_helpers import NLK, SAMPLE_KR
 
 ALMOND = NLK + "KJU201703899"
 

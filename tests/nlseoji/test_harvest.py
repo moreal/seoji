@@ -3,7 +3,7 @@ from datetime import date
 import httpx
 
 from seoji.nlseoji.harvest import harvest_range, window_dates
-from tests.nlseoji.conftest import fixture, paged_handler
+from tests.seoji_helpers import fixture, paged_handler
 
 DAY = date(2022, 5, 9)
 

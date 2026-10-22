@@ -10,6 +10,7 @@ from seoji.lod.parse import FORMATS
 from seoji.lod.sparql import sparql_construct, sparql_count_books
 from seoji.nlseoji.client import SeojiClient
 from seoji.nlseoji.harvest import harvest_range, window_dates
+from seoji.silver.build import rebuild_silver, refresh_silver
 
 
 def _cmd_db_migrate(args: argparse.Namespace) -> int:
@@ -64,6 +65,13 @@ def _cmd_harvest(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_silver(args: argparse.Namespace) -> int:
+    with connect(load_settings().database_url) as conn:
+        stats = rebuild_silver(conn) if args.silver_command == "rebuild" else refresh_silver(conn)
+    print(stats)
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="seoji")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -91,6 +99,12 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--window", choices=["daily", "weekly"])
     p.add_argument("--page-size", type=int, default=100)
     p.set_defaults(func=_cmd_harvest)
+
+    silver = sub.add_parser("silver").add_subparsers(dest="silver_command", required=True)
+    silver.add_parser("rebuild", help="recompute silver from bronze").set_defaults(func=_cmd_silver)
+    silver.add_parser("refresh", help="re-merge rows changed since the last build").set_defaults(
+        func=_cmd_silver
+    )
 
     return parser
 

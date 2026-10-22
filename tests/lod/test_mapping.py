@@ -7,7 +7,7 @@ from seoji.lod.parse import iter_resources
 from seoji.model import CandidateRecord, InvalidIsbn, NoIsbnRecord
 from seoji.normalize.authors import Contributor
 from seoji.normalize.isbn import is_korean_isbn
-from tests.lod.conftest import NLK, SAMPLE_FOREIGN, SAMPLE_KR
+from tests.lod_helpers import NLK, SAMPLE_FOREIGN, SAMPLE_KR
 
 
 @pytest.fixture(scope="module")

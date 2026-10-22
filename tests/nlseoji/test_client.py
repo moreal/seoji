@@ -2,7 +2,7 @@ import httpx
 import pytest
 
 from seoji.nlseoji.client import FatalSeojiError, PageSizeTooLarge
-from tests.nlseoji.conftest import fixture, paged_handler
+from tests.seoji_helpers import fixture, paged_handler
 
 
 def test_search_strips_cert_key_from_params(make_client):

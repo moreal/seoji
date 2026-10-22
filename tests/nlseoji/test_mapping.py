@@ -2,7 +2,7 @@ from datetime import UTC, date, datetime
 
 from seoji.model import CandidateRecord, InvalidIsbn
 from seoji.nlseoji.mapping import map_seoji_doc
-from tests.nlseoji.conftest import fixture
+from tests.seoji_helpers import fixture
 
 NOW = datetime(2026, 10, 22, tzinfo=UTC)
 

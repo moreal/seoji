@@ -3,7 +3,7 @@ from pathlib import Path
 import pyoxigraph as ox
 import pytest
 
-FIXTURES = Path(__file__).resolve().parents[1] / "fixtures" / "lod"
+FIXTURES = Path(__file__).resolve().parent / "fixtures" / "lod"
 SAMPLE_KR = FIXTURES / "sample_kr.rdf"
 SAMPLE_FOREIGN = FIXTURES / "sample_foreign.rdf"
 NLK = "http://lod.nl.go.kr/resource/"

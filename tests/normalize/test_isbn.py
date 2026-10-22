@@ -63,3 +63,11 @@ def test_split_isbn_list():
         "9791160979053",
         "8952981430",
     ]
+
+
+def test_isbn13_to_10():
+    from seoji.normalize.isbn import isbn13_to_10
+
+    assert isbn13_to_10("9788952981431") == "895298143X"
+    assert isbn13_to_10("9788936434267") == "8936434268"
+    assert isbn13_to_10("9791160979053") is None
