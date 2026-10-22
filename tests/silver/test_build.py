@@ -1,3 +1,5 @@
+from datetime import date
+
 from seoji.lod.load import load_dump
 from seoji.silver.build import rebuild_silver, refresh_silver
 from tests.lod_helpers import NLK
@@ -203,3 +205,23 @@ def test_seoji_set_expression_change_is_not_sticky(loaded):
         None,
         True,
     )
+
+
+def test_real_seoji_set_record_fills_book_set(db, make_client):
+    import httpx
+
+    from seoji.nlseoji.harvest import harvest_range
+    from tests.seoji_helpers import fixture
+
+    docs = fixture("real_20220509_sample.json")["docs"]
+    page = {"PAGE_NO": "1", "TOTAL_COUNT": str(len(docs)), "docs": docs}
+    client, _, _ = make_client(lambda r: httpx.Response(200, json=page))
+    harvest_range(db, client, date(2022, 5, 9), date(2022, 5, 9), page_size=100)
+    rebuild_silver(db)
+    s = one(db, "SELECT * FROM silver.book_set WHERE set_isbn13 = '9791169031547'")
+    assert (s["set_expression"], s["total_volumes"], s["is_open_ended"]) == ("전6권", 6, False)
+    assert s["title"] == "죄악은 흔적을 남긴다(세트)"
+    members = db.execute(
+        "SELECT count(*) AS n FROM silver.set_member WHERE set_isbn13 = '9791169031547'"
+    ).fetchone()["n"]
+    assert members == 2

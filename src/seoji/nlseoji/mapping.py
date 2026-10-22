@@ -30,18 +30,28 @@ def _int(value: str | None, *, digits_only: bool = False) -> int | None:
 def map_seoji_doc(
     doc: dict[str, str], observed_at: datetime
 ) -> CandidateRecord | InvalidIsbn | None:
-    raw_isbn = _text(doc, "EA_ISBN")
+    # A record with only SET_ISBN describes the set itself (e.g. SET_EXPRESSION "전6권").
+    is_set_record = not _text(doc, "EA_ISBN") and bool(_text(doc, "SET_ISBN"))
+    raw_isbn = _text(doc, "SET_ISBN") if is_set_record else _text(doc, "EA_ISBN")
     if not raw_isbn:
         return None
     isbn = parse_isbn_value(raw_isbn)
     if isbn is None:
         return InvalidIsbn("nlseoji", raw_isbn, raw_isbn)
 
-    add_code = _text(doc, "EA_ADD_CODE")
+    add_code = _text(doc, "SET_ADD_CODE" if is_set_record else "EA_ADD_CODE")
     decoded = decode_add_code(add_code)
-    ebook = _text(doc, "EBOOK_YN") == "Y" or (decoded is not None and decoded.form == "5")
+    form = _text(doc, "FORM")
+    if form == "오디오북":
+        binding = "audio"
+    elif _text(doc, "EBOOK_YN") == "Y" or (decoded is not None and decoded.form == "5"):
+        binding = "ebook"
+    else:
+        binding = "paper"
     width, height = parse_book_size(_text(doc, "BOOK_SIZE"))
-    pub_date, precision = parse_issued(_text(doc, "PUBLISH_PREDATE"))
+    pub_date, precision = parse_issued(_text(doc, "REAL_PUBLISH_DATE"))
+    if pub_date is None:
+        pub_date, precision = parse_issued(_text(doc, "PUBLISH_PREDATE"))
     deposit = _text(doc, "DEPOSIT_YN")
 
     fields: dict = {}
@@ -63,8 +73,8 @@ def map_seoji_doc(
         "page_count": _int(doc.get("PAGE")),
         "width_mm": width,
         "height_mm": height,
-        "form": _text(doc, "FORM"),
-        "binding": "ebook" if ebook else "paper",
+        "form": form,
+        "binding": binding,
         "pub_date": pub_date,
         "pub_date_precision": precision,
         "ea_add_code": add_code if decoded else None,
@@ -84,7 +94,7 @@ def map_seoji_doc(
     if subject := _text(doc, "SUBJECT"):
         subjects.append(("seoji_subject", subject, subject))
 
-    set_isbn = parse_isbn_value(_text(doc, "SET_ISBN") or "")
+    set_isbn = None if is_set_record else parse_isbn_value(_text(doc, "SET_ISBN") or "")
     return CandidateRecord(
         source="nlseoji",
         source_key=isbn.isbn13,

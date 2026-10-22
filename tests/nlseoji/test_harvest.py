@@ -51,3 +51,15 @@ def test_harvest_shrinks_page_size_on_013(db, make_client):
 def test_window_dates():
     assert window_dates("daily", date(2026, 10, 22)) == (date(2026, 9, 22), date(2027, 1, 20))
     assert window_dates("weekly", date(2026, 10, 22)) == (date(2025, 10, 22), date(2026, 9, 21))
+
+
+def test_harvest_stores_docs_without_any_isbn(db, make_client):
+    page = {
+        "PAGE_NO": "1",
+        "TOTAL_COUNT": "1",
+        "docs": [{"TITLE": "ISBN 없음", "EA_ISBN": "", "SET_ISBN": ""}],
+    }
+    client, _, _ = make_client(lambda r: httpx.Response(200, json=page))
+    harvest_range(db, client, DAY, DAY, page_size=10)
+    row = db.execute("SELECT source_key, isbn13 FROM bronze.source_record").fetchone()
+    assert row["isbn13"] is None and row["source_key"].startswith("sha:")

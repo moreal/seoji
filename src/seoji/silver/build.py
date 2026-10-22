@@ -230,13 +230,21 @@ def _sync_sets(conn: psycopg.Connection, scope: list[str] | None) -> None:
     """Recompute book_set rows (all, or those in scope) from the set links in silver.candidate."""
     in_scope = "AND set_isbn13 = ANY(%(scope)s)" if scope is not None else ""
     params = {"scope": scope}
+    # A set is known from its members' set_isbn13 and from its own record (Seoji set-only
+    # records carry set_expression with no set_isbn13).
     links = f"""
-        SELECT body ->> 'set_isbn13' AS set_isbn13, min(body ->> 'set_add_code') AS code,
-               min(body ->> 'set_expression') AS expr
-          FROM silver.candidate
-         WHERE body ->> 'set_isbn13' IS NOT NULL
-               {in_scope.replace("set_isbn13", "body ->> 'set_isbn13'")}
-         GROUP BY 1
+        SELECT set_isbn13, min(code) AS code, min(expr) AS expr FROM (
+          SELECT body ->> 'set_isbn13' AS set_isbn13, body ->> 'set_add_code' AS code,
+                 body ->> 'set_expression' AS expr
+            FROM silver.candidate
+           WHERE body ->> 'set_isbn13' IS NOT NULL
+                 {in_scope.replace("set_isbn13", "body ->> 'set_isbn13'")}
+          UNION ALL
+          SELECT isbn13, body ->> 'set_add_code', body ->> 'set_expression'
+            FROM silver.candidate
+           WHERE body ->> 'set_isbn13' IS NULL AND body ->> 'set_expression' IS NOT NULL
+                 {in_scope.replace("set_isbn13", "isbn13")}
+        ) l GROUP BY 1
     """
     conn.execute(
         f"DELETE FROM silver.book_set WHERE set_isbn13 NOT IN"

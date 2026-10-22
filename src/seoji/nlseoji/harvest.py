@@ -98,9 +98,9 @@ def _harvest_day(conn, client: SeojiClient, day: date, page_size: int, stats: Ha
         now = datetime.now(UTC)
         for doc in page.docs:
             mapped = map_seoji_doc(doc, now)
-            if mapped is None:
-                continue
-            if isinstance(mapped, InvalidIsbn):
+            if mapped is None:  # no ISBN at all: keep it in bronze, keyed by content
+                key, isbn13 = "sha:" + _sha256(doc).hex(), None
+            elif isinstance(mapped, InvalidIsbn):
                 stats.invalid += 1
                 key, isbn13 = mapped.source_key, None
             else:
