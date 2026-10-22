@@ -1,6 +1,5 @@
 import hashlib
 import json
-import re
 from collections.abc import Iterable
 from dataclasses import dataclass
 
@@ -29,7 +28,6 @@ EDITION_COLUMNS = (
     "isbn13", "isbn10", "primary_resource_uri", *FIELDS, *ADD_COLUMNS, "title_normalized",
     "publisher_normalized", "pub_status", "is_korean", "provenance", "content_hash",
 )  # fmt: skip
-_TOTAL_VOLUMES = re.compile(r"전\s*(\d+)\s*권")
 
 
 @dataclass
@@ -196,28 +194,17 @@ def _write_editions(conn: psycopg.Connection, merged: list[MergedEdition]) -> No
         "INSERT INTO silver.merge_issue (isbn13, kind, detail) VALUES (%s, %s, %s)",
         [(m.isbn13, i.kind, Jsonb(i.detail)) for m in merged for i in m.issues],
     )
-    sets = {s[0]: s for m in merged for s in m.set_links}
+    # Placeholder rows satisfy set_member's FK; _sync_sets fills in the real values.
     conn.cursor().executemany(
-        "INSERT INTO silver.book_set (set_isbn13, set_add_code, set_expression, total_volumes,"
-        " is_open_ended) VALUES (%s, %s, %s, %s, %s) ON CONFLICT (set_isbn13) DO UPDATE SET"
-        " set_add_code = COALESCE(EXCLUDED.set_add_code, silver.book_set.set_add_code),"
-        " set_expression = COALESCE(EXCLUDED.set_expression, silver.book_set.set_expression),"
-        " total_volumes = COALESCE(EXCLUDED.total_volumes, silver.book_set.total_volumes),"
-        " is_open_ended = silver.book_set.is_open_ended AND EXCLUDED.is_open_ended",
-        [(isbn, code, expr, total, total is None)
-         for isbn, code, expr in sets.values()
-         for total in [_total_volumes(expr)]],
-    )  # fmt: skip
+        "INSERT INTO silver.book_set (set_isbn13, is_open_ended) VALUES (%s, true)"
+        " ON CONFLICT (set_isbn13) DO NOTHING",
+        [(isbn,) for isbn in {s[0] for m in merged for s in m.set_links}],
+    )
     _copy(
         conn, "silver.set_member", ("set_isbn13", "isbn13", "volume_label"),
         [(set_isbn, m.isbn13, m.fields.get("volume_label"))
          for m in merged for set_isbn, _, _ in m.set_links],
     )  # fmt: skip
-
-
-def _total_volumes(expression: str | None) -> int | None:
-    m = _TOTAL_VOLUMES.search(expression or "")
-    return int(m.group(1)) if m else None
 
 
 def _merge(conn: psycopg.Connection, isbns: list[str] | None) -> int:
@@ -236,11 +223,43 @@ def _merge(conn: psycopg.Connection, isbns: list[str] | None) -> int:
             ]
             _write_editions(conn, merged)
             count += len(merged)
-    conn.execute(
-        "UPDATE silver.book_set b SET title = e.title FROM silver.edition e"
-        " WHERE e.isbn13 = b.set_isbn13 AND b.title IS DISTINCT FROM e.title"
-    )
     return count
+
+
+def _sync_sets(conn: psycopg.Connection, scope: list[str] | None) -> None:
+    """Recompute book_set rows (all, or those in scope) from the set links in silver.candidate."""
+    in_scope = "AND set_isbn13 = ANY(%(scope)s)" if scope is not None else ""
+    params = {"scope": scope}
+    links = f"""
+        SELECT body ->> 'set_isbn13' AS set_isbn13, min(body ->> 'set_add_code') AS code,
+               min(body ->> 'set_expression') AS expr
+          FROM silver.candidate
+         WHERE body ->> 'set_isbn13' IS NOT NULL
+               {in_scope.replace("set_isbn13", "body ->> 'set_isbn13'")}
+         GROUP BY 1
+    """
+    conn.execute(
+        f"DELETE FROM silver.book_set WHERE set_isbn13 NOT IN"
+        f" (SELECT set_isbn13 FROM ({links}) l) {in_scope}",
+        params,
+    )
+    conn.execute(
+        f"""
+        INSERT INTO silver.book_set AS b
+          (set_isbn13, set_add_code, set_expression, title, total_volumes, is_open_ended)
+        SELECT l.set_isbn13, l.code, l.expr, e.title, v.total, v.total IS NULL
+          FROM ({links}) l
+          LEFT JOIN silver.edition e ON e.isbn13 = l.set_isbn13
+          CROSS JOIN LATERAL (
+            SELECT (regexp_match(l.expr, '전\\s*(\\d+)\\s*권'))[1]::int AS total
+          ) v
+        ON CONFLICT (set_isbn13) DO UPDATE SET
+          set_add_code = EXCLUDED.set_add_code, set_expression = EXCLUDED.set_expression,
+          title = EXCLUDED.title, total_volumes = EXCLUDED.total_volumes,
+          is_open_ended = EXCLUDED.is_open_ended
+        """,
+        params,
+    )
 
 
 # ── entry points ─────────────────────────────────────────────────────────────
@@ -271,6 +290,7 @@ def rebuild_silver(conn: psycopg.Connection, *, with_gold: bool = True) -> Build
     _map_lod(conn, "deleted_at IS NULL", (), stats)
     _map_nlseoji(conn, "true", (), stats)
     stats.editions = _merge(conn, None)
+    _sync_sets(conn, None)
     _finish(conn, state_id, stats)
     if with_gold:
         rebuild_search_doc(conn)
@@ -305,17 +325,18 @@ def refresh_silver(conn: psycopg.Connection, *, with_gold: bool = True) -> Build
         )
     ]
     affected: set[str] = set()
+    sets: set[str] = set()
     for source, keys in (("lod", lod_keys), ("nlseoji", seoji_keys)):
         if not keys:
             continue
-        affected |= {
-            r["isbn13"]
-            for r in conn.execute(
-                "DELETE FROM silver.candidate WHERE source = %s AND source_key = ANY(%s)"
-                " RETURNING isbn13",
-                (source, keys),
-            )
-        }
+        for r in conn.execute(
+            "DELETE FROM silver.candidate WHERE source = %s AND source_key = ANY(%s)"
+            " RETURNING isbn13, body ->> 'set_isbn13' AS set_isbn13",
+            (source, keys),
+        ):
+            affected.add(r["isbn13"])
+            if r["set_isbn13"]:
+                sets.add(r["set_isbn13"])
         conn.execute(
             "DELETE FROM silver.merge_issue WHERE kind = 'invalid_isbn' AND source = %s"
             " AND source_key = ANY(%s)",
@@ -338,6 +359,15 @@ def refresh_silver(conn: psycopg.Connection, *, with_gold: bool = True) -> Build
         (isbns,),
     )
     stats.editions = _merge(conn, isbns)
+    sets |= {
+        r["s"]
+        for r in conn.execute(
+            "SELECT DISTINCT body ->> 'set_isbn13' AS s FROM silver.candidate"
+            " WHERE isbn13 = ANY(%s) AND body ->> 'set_isbn13' IS NOT NULL",
+            (isbns,),
+        )
+    }
+    _sync_sets(conn, sorted(sets | affected))
     _finish(conn, state_id, stats)
     if with_gold and isbns:
         rebuild_search_doc(conn, isbns)

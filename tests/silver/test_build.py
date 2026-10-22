@@ -148,3 +148,58 @@ def test_refresh_removes_tombstoned(db, make_nt):
     )
     refresh_silver(db)
     assert one(db, "SELECT 1 AS ok FROM silver.edition WHERE isbn13 = %s", ALMOND) is None
+
+
+def _sets(db):
+    sets = db.execute("SELECT * FROM silver.book_set ORDER BY set_isbn13").fetchall()
+    members = db.execute("SELECT * FROM silver.set_member ORDER BY set_isbn13, isbn13").fetchall()
+    return sets, members
+
+
+def test_refresh_drops_sets_of_tombstoned_resources(loaded, make_nt):
+    rebuild_silver(loaded)
+    load_dump(
+        loaded,
+        make_nt("no_set.nt", drop={NLK + "KJU201108521"}),
+        dataset="book",
+        fmt="nt",
+        dump_date=None,
+        mark_missing=True,
+    )
+    refresh_silver(loaded)
+    assert (
+        one(loaded, "SELECT 1 AS ok FROM silver.book_set WHERE set_isbn13 = '9791189431907'")
+        is None
+    )
+
+
+def test_refresh_sets_match_rebuild(loaded, make_nt):
+    rebuild_silver(loaded)
+    load_dump(
+        loaded,
+        make_nt("fewer.nt", drop={NLK + "KJU201108521", NLK + "KJU201211257"}),
+        dataset="book",
+        fmt="nt",
+        dump_date=None,
+        mark_missing=True,
+    )
+    refresh_silver(loaded)
+    after_refresh = _sets(loaded)
+    rebuild_silver(loaded)
+    assert after_refresh == _sets(loaded)
+
+
+def test_seoji_set_expression_change_is_not_sticky(loaded):
+    rebuild_silver(loaded)
+    loaded.execute(
+        'UPDATE bronze.source_record SET record = record || \'{"SET_EXPRESSION": "세트"}\','
+        " changed_at = clock_timestamp() WHERE source_key = '9791180000010'"
+    )
+    loaded.commit()
+    refresh_silver(loaded)
+    row = one(loaded, "SELECT * FROM silver.book_set WHERE set_isbn13 = '9791180000003'")
+    assert (row["set_expression"], row["total_volumes"], row["is_open_ended"]) == (
+        "세트",
+        None,
+        True,
+    )
