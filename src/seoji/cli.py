@@ -8,6 +8,8 @@ from seoji.db import connect, migrate
 from seoji.lod.load import load_dump
 from seoji.lod.parse import FORMATS
 from seoji.lod.sparql import sparql_construct, sparql_count_books
+from seoji.nlseoji.client import SeojiClient
+from seoji.nlseoji.harvest import harvest_range, window_dates
 
 
 def _cmd_db_migrate(args: argparse.Namespace) -> int:
@@ -42,6 +44,26 @@ def _cmd_lod_count(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_harvest(args: argparse.Namespace) -> int:
+    settings = load_settings()
+    if not settings.seoji_cert_key:
+        print("SEOJI_CERT_KEY가 필요합니다 (.env 또는 환경변수)", file=sys.stderr)
+        return 2
+    if args.window:
+        start, end = window_dates(args.window, date.today())
+    elif args.date_from and args.date_to:
+        start, end = date.fromisoformat(args.date_from), date.fromisoformat(args.date_to)
+    else:
+        print("--window 또는 --from/--to 를 지정하세요", file=sys.stderr)
+        return 2
+    with connect(settings.database_url) as conn:
+        stats = harvest_range(
+            conn, SeojiClient(settings.seoji_cert_key), start, end, page_size=args.page_size
+        )
+    print(stats)
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="seoji")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -62,6 +84,13 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("-o", "--output", required=True)
     p.set_defaults(func=_cmd_lod_fetch)
     lod.add_parser("count", help="count bibo:Book via SPARQL").set_defaults(func=_cmd_lod_count)
+
+    p = sub.add_parser("harvest", help="harvest the NLK Seoji API by publish date")
+    p.add_argument("--from", dest="date_from")
+    p.add_argument("--to", dest="date_to")
+    p.add_argument("--window", choices=["daily", "weekly"])
+    p.add_argument("--page-size", type=int, default=100)
+    p.set_defaults(func=_cmd_harvest)
 
     return parser
 

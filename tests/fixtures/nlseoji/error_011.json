@@ -1,0 +1,5 @@
+{
+ "RESULT": "ERROR",
+ "ERR_CODE": "011",
+ "ERR_MESSAGE": "유효하지않은 인증키입니다."
+}
