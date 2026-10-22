@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 KOREAN_PREFIXES = ("97889", "97911")
 
-_ISBN_HEAD = re.compile(r"^\s*([0-9][0-9\- ]{8,16}[0-9Xx])(.*)$")
+_ISBN_HEAD = re.compile(r"^\s*([0-9][0-9\-]{8,16}[0-9Xx])(?![0-9\-])(.*)$")
 _SPLIT = re.compile(r"[\s,;]+")
 
 

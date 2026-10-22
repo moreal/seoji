@@ -71,3 +71,17 @@ def test_isbn13_to_10():
     assert isbn13_to_10("9788952981431") == "895298143X"
     assert isbn13_to_10("9788936434267") == "8936434268"
     assert isbn13_to_10("9791160979053") is None
+
+
+def test_unparenthesized_qualifier():
+    v = parse_isbn_value("9788925273112 4")
+    assert (v.isbn13, v.qualifier) == ("9788925273112", "4")
+
+
+def test_two_isbns_in_one_value_keeps_first():
+    assert parse_isbn_value("9788925273112 9788936434267").isbn13 == "9788925273112"
+
+
+def test_qualifier_without_space():
+    v = parse_isbn_value("9788925273112(21)")
+    assert v is not None and v.qualifier == "21"
