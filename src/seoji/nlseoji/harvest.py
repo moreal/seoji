@@ -1,5 +1,6 @@
 import hashlib
 import json
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, timedelta
 from typing import Literal
@@ -14,6 +15,7 @@ from seoji.nlseoji.mapping import map_seoji_doc
 
 SOURCE = "nlseoji"
 MIN_PAGE_SIZE = 10
+ALL_CURSOR = "nlseoji_all"
 
 
 @dataclass
@@ -23,6 +25,7 @@ class HarvestStats:
     records: int = 0
     changed: int = 0
     invalid: int = 0
+    total_count: int = 0
 
 
 def _sha256(obj) -> bytes:
@@ -78,6 +81,23 @@ def _store_record(conn, key: str, isbn13: str | None, doc: dict, payload_id: int
     return True
 
 
+def _store_page(conn: psycopg.Connection, page: SeojiPage, stats: HarvestStats) -> None:
+    payload_id = _store_payload(conn, page)
+    now = datetime.now(UTC)
+    for doc in page.docs:
+        mapped = map_seoji_doc(doc, now)
+        if mapped is None:  # no ISBN at all: keep it in bronze, keyed by content
+            key, isbn13 = "sha:" + _sha256(doc).hex(), None
+        elif isinstance(mapped, InvalidIsbn):
+            stats.invalid += 1
+            key, isbn13 = mapped.source_key, None
+        else:
+            assert isinstance(mapped, CandidateRecord)
+            stats.records += 1
+            key, isbn13 = mapped.source_key, mapped.isbn13
+        stats.changed += _store_record(conn, key, isbn13, doc, payload_id)
+
+
 def _harvest_day(conn, client: SeojiClient, day: date, page_size: int, stats: HarvestStats):
     ymd = day.strftime("%Y%m%d")
     lock_bronze_shared(conn)  # held until the day is committed
@@ -94,20 +114,7 @@ def _harvest_day(conn, client: SeojiClient, day: date, page_size: int, stats: Ha
             stats.requests += 1
             continue
         stats.requests += 1
-        payload_id = _store_payload(conn, page)
-        now = datetime.now(UTC)
-        for doc in page.docs:
-            mapped = map_seoji_doc(doc, now)
-            if mapped is None:  # no ISBN at all: keep it in bronze, keyed by content
-                key, isbn13 = "sha:" + _sha256(doc).hex(), None
-            elif isinstance(mapped, InvalidIsbn):
-                stats.invalid += 1
-                key, isbn13 = mapped.source_key, None
-            else:
-                assert isinstance(mapped, CandidateRecord)
-                stats.records += 1
-                key, isbn13 = mapped.source_key, mapped.isbn13
-            stats.changed += _store_record(conn, key, isbn13, doc, payload_id)
+        _store_page(conn, page, stats)
         if not page.docs or page_no * page_size >= page.total_count:
             return
         page_no += 1
@@ -123,4 +130,70 @@ def harvest_range(
         conn.commit()
         stats.days += 1
         day += timedelta(days=1)
+    return stats
+
+
+def _resume_page(conn: psycopg.Connection, page_size: int, restart: bool) -> int:
+    """Page to fetch first: the last committed page again (it may have been partial)."""
+    row = conn.execute(
+        "SELECT page_no, page_size FROM bronze.harvest_cursor WHERE name = %s", (ALL_CURSOR,)
+    ).fetchone()
+    if restart or row is None:
+        return 1
+    return (row["page_no"] - 1) * row["page_size"] // page_size + 1
+
+
+def harvest_all(
+    conn: psycopg.Connection,
+    client: SeojiClient,
+    *,
+    page_size: int = 1000,
+    restart: bool = False,
+    max_pages: int | None = None,
+    on_page: Callable[[int, int, int], None] | None = None,
+) -> HarvestStats:
+    """Page through every Seoji record by INPUT_DATE ascending, resuming from the cursor.
+
+    New records sort to the end, so earlier pages stay put while a run is in progress, and a
+    finished run can be repeated to pick up the tail.
+    """
+    stats = HarvestStats()
+    page_no = _resume_page(conn, page_size, restart)
+    fetched = 0
+    while max_pages is None or fetched < max_pages:
+        lock_bronze_shared(conn)
+        try:
+            page = client.search(
+                page_no=page_no, page_size=page_size, sort="INPUT_DATE", order_by="ASC"
+            )
+        except PageSizeTooLarge:
+            conn.rollback()
+            if page_size <= MIN_PAGE_SIZE:
+                raise
+            offset = (page_no - 1) * page_size
+            page_size = max(MIN_PAGE_SIZE, page_size // 2)
+            page_no = offset // page_size + 1
+            stats.requests += 1
+            continue
+        stats.requests += 1
+        _store_page(conn, page, stats)
+        done = not page.docs or page_no * page_size >= page.total_count
+        conn.execute(
+            "INSERT INTO bronze.harvest_cursor (name, page_no, page_size, total_count, updated_at,"
+            " completed_at) VALUES (%(name)s, %(page)s, %(size)s, %(total)s, now(),"
+            " CASE WHEN %(done)s THEN now() END)"
+            " ON CONFLICT (name) DO UPDATE SET page_no = EXCLUDED.page_no,"
+            " page_size = EXCLUDED.page_size, total_count = EXCLUDED.total_count,"
+            " updated_at = EXCLUDED.updated_at, completed_at = EXCLUDED.completed_at",
+            {"name": ALL_CURSOR, "page": page_no, "size": page_size,
+             "total": page.total_count, "done": done},
+        )  # fmt: skip
+        conn.commit()
+        stats.total_count = page.total_count
+        if on_page:
+            on_page(page_no, page_size, page.total_count)
+        fetched += 1
+        if done:
+            break
+        page_no += 1
     return stats

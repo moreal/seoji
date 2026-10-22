@@ -10,7 +10,7 @@ from seoji.lod.load import load_dump
 from seoji.lod.parse import FORMATS
 from seoji.lod.sparql import sparql_construct, sparql_count_books
 from seoji.nlseoji.client import SeojiClient
-from seoji.nlseoji.harvest import harvest_range, window_dates
+from seoji.nlseoji.harvest import harvest_all, harvest_range, window_dates
 from seoji.report import fill_rates, issue_counts, source_coverage
 from seoji.silver.build import rebuild_silver, refresh_silver
 
@@ -52,16 +52,34 @@ def _cmd_harvest(args: argparse.Namespace) -> int:
     if not settings.seoji_cert_key:
         print("SEOJI_CERT_KEY가 필요합니다 (.env 또는 환경변수)", file=sys.stderr)
         return 2
+    if args.all:
+
+        def progress(page: int, size: int, total: int) -> None:
+            if page % 50 == 0 or page * size >= total:
+                last = -(-total // size)
+                print(f"page {page}/{last} ({min(page * size, total):,}/{total:,})", flush=True)
+
+        with connect(settings.database_url) as conn:
+            stats = harvest_all(
+                conn,
+                SeojiClient(settings.seoji_cert_key),
+                page_size=args.page_size or 1000,
+                restart=args.restart,
+                max_pages=args.max_pages,
+                on_page=progress,
+            )
+        print(stats)
+        return 0
     if args.window:
         start, end = window_dates(args.window, date.today())
     elif args.date_from and args.date_to:
         start, end = date.fromisoformat(args.date_from), date.fromisoformat(args.date_to)
     else:
-        print("--window 또는 --from/--to 를 지정하세요", file=sys.stderr)
+        print("--all, --window 또는 --from/--to 를 지정하세요", file=sys.stderr)
         return 2
     with connect(settings.database_url) as conn:
         stats = harvest_range(
-            conn, SeojiClient(settings.seoji_cert_key), start, end, page_size=args.page_size
+            conn, SeojiClient(settings.seoji_cert_key), start, end, page_size=args.page_size or 100
         )
     print(stats)
     return 0
@@ -131,7 +149,10 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--from", dest="date_from")
     p.add_argument("--to", dest="date_to")
     p.add_argument("--window", choices=["daily", "weekly"])
-    p.add_argument("--page-size", type=int, default=100)
+    p.add_argument("--all", action="store_true", help="page through every record (resumable)")
+    p.add_argument("--restart", action="store_true", help="with --all: ignore the saved cursor")
+    p.add_argument("--max-pages", type=int, help="with --all: stop after N pages")
+    p.add_argument("--page-size", type=int, help="default 1000 for --all, 100 otherwise")
     p.set_defaults(func=_cmd_harvest)
 
     silver = sub.add_parser("silver").add_subparsers(dest="silver_command", required=True)

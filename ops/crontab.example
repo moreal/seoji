@@ -7,5 +7,7 @@ PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin
 0 3 * * *   cd $SEOJI && uv run seoji harvest --window daily  && uv run seoji silver refresh >> logs/daily.log 2>&1
 # 매주 일요일 04:00 — [오늘-365일, 오늘-31일] (늦게 등록·수정된 레코드 보정)
 0 4 * * 0   cd $SEOJI && uv run seoji harvest --window weekly && uv run seoji silver refresh >> logs/weekly.log 2>&1
-# 분기 첫날 05:00 — 전 기간 재수집. 시작일은 Seoji 실키로 가장 오래된 PUBLISH_PREDATE를 확인해 정하세요.
-0 5 1 1,4,7,10 * cd $SEOJI && uv run seoji harvest --from 1990-01-01 --to $(date -v+90d +\%F) && uv run seoji silver refresh >> logs/quarterly.log 2>&1
+# 매일 02:30 — 새로 등록된 레코드(INPUT_DATE 정렬의 끝부분)
+30 2 * * *  cd $SEOJI && { uv run seoji harvest --all && uv run seoji silver refresh; } >> logs/tail.log 2>&1
+# 분기 첫날 05:00 — 전체를 처음부터 다시 훑어 기존 레코드의 수정분 반영 (약 2.5시간)
+0 5 1 1,4,7,10 * cd $SEOJI && { uv run seoji harvest --all --restart && uv run seoji silver refresh; } >> logs/quarterly.log 2>&1
