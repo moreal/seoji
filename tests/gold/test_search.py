@@ -79,3 +79,7 @@ def test_partial_rebuild(built):
     built.execute("DELETE FROM gold.search_doc")
     assert rebuild_search_doc(built, ["9788936434267"]) == 1
     assert [r["isbn13"] for r in search(built, "아몬드")] == ["9788936434267"]
+
+
+def test_search_by_title_and_volume(built):
+    assert "9788925807164" in {r["isbn13"] for r in search(built, "오토멘 제4권")}

@@ -1,0 +1,11 @@
+# seoji 증분 수집 예시 (crontab -e 에 붙여 넣고 경로를 맞추세요)
+# SEOJI_CERT_KEY / DATABASE_URL 은 저장소 루트의 .env 에서 읽습니다.
+SEOJI=/path/to/seoji
+PATH=/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin
+
+# 매일 03:00 — 발행예정일 [오늘-30일, 오늘+90일]
+0 3 * * *   cd $SEOJI && uv run seoji harvest --window daily  && uv run seoji silver refresh >> logs/daily.log 2>&1
+# 매주 일요일 04:00 — [오늘-365일, 오늘-31일] (늦게 등록·수정된 레코드 보정)
+0 4 * * 0   cd $SEOJI && uv run seoji harvest --window weekly && uv run seoji silver refresh >> logs/weekly.log 2>&1
+# 분기 첫날 05:00 — 전 기간 재수집. 시작일은 Seoji 실키로 가장 오래된 PUBLISH_PREDATE를 확인해 정하세요.
+0 5 1 1,4,7,10 * cd $SEOJI && uv run seoji harvest --from 1990-01-01 --to $(date -v+90d +\%F) && uv run seoji silver refresh >> logs/quarterly.log 2>&1

@@ -4,7 +4,8 @@ _SELECT = """
 SELECT e.isbn13, e.title, c.authors, e.publisher, e.series_title, e.kdc, e.add_reader, e.binding,
        extract(year FROM e.pub_date)::int, e.is_korean,
        gold.search_key(concat_ws(' ', e.title, e.title, e.remainder_of_title, e.title_hanja,
-                                 c.authors, e.publisher, e.series_title, s.labels))
+                                 e.volume_label, c.authors, e.publisher, e.series_title,
+                                 s.labels))
   FROM silver.edition e
   LEFT JOIN LATERAL (
     SELECT string_agg(name, ', ' ORDER BY first_ordinal) AS authors

@@ -11,6 +11,7 @@ from seoji.lod.parse import FORMATS
 from seoji.lod.sparql import sparql_construct, sparql_count_books
 from seoji.nlseoji.client import SeojiClient
 from seoji.nlseoji.harvest import harvest_range, window_dates
+from seoji.report import fill_rates, issue_counts, source_coverage
 from seoji.silver.build import rebuild_silver, refresh_silver
 
 
@@ -91,6 +92,20 @@ def _cmd_search(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_report(args: argparse.Namespace) -> int:
+    with connect(load_settings().database_url) as conn:
+        print("# source coverage")
+        for key, n in source_coverage(conn).items():
+            print(f"{key}\t{n}")
+        print("\n# open merge issues")
+        for kind, n in issue_counts(conn).items():
+            print(f"{kind}\t{n}")
+        print("\n# fill rates (silver.edition)")
+        for field, n, ratio in fill_rates(conn):
+            print(f"{field}\t{n}\t{ratio:.1%}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="seoji")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -133,6 +148,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--limit", type=int, default=20)
     p.add_argument("--korean-only", action="store_true")
     p.set_defaults(func=_cmd_search)
+
+    sub.add_parser("report", help="coverage, issues and fill rates").set_defaults(func=_cmd_report)
 
     return parser
 
