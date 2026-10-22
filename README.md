@@ -105,7 +105,7 @@ uv run ruff check && uv run ruff format --check
 bash scripts/fetch_lod_fixtures.sh   # LOD 테스트 픽스처 다시 받기
 ```
 
-`tests/fixtures/nlseoji/`의 Seoji 응답은 **명세의 필드 목록으로 만든 합성 데이터**입니다. 실키를 받으면 실제 응답으로 바꾸세요(아래 검증 절차).
+`tests/fixtures/nlseoji/page_*.json`·`error_*.json`은 수집 동작(페이징, 오류 코드, 잘못된 ISBN)을 시험하는 **합성 데이터**이고, `real_20220509_sample.json`은 **실제 Seoji 응답에서 고른 8건**입니다(책소개·목차·서평 본문은 지웠습니다).
 
 ## 검증 기록
 
@@ -117,9 +117,21 @@ bash scripts/fetch_lod_fixtures.sh   # LOD 테스트 픽스처 다시 받기
 - `seoji search` 아몬드·역사·헌터·수학·"코난 46" 모두 기대한 결과가 나왔고, 실행 계획에서 `search_doc_bigm` 인덱스가 쓰였습니다.
 - 채움률: 제목·출판사·발행일·KDC 100%, 권차 91.8%, 쪽수 1.9%(묶음 레코드 영향). 가격·부가기호·표지는 0%(Seoji 미수집).
 
-## 실키·전체 덤프를 받은 뒤 할 일
+**2026-10-22, 실제 Seoji API**
 
-1. `.env`에 `SEOJI_CERT_KEY`를 넣고 `uv run seoji harvest --from 2022-05-09 --to 2022-05-09`를 실행합니다.
-2. `bronze.api_payload`의 실제 응답으로 `tests/fixtures/nlseoji/`의 합성 픽스처를 교체하고 `uv run pytest`를 다시 돌립니다(엔벌로프 `docs`/`TOTAL_COUNT` 형태 확인).
-3. `--page-size 200`, `500`으로 013 오류가 나는지, 가장 오래된 `PUBLISH_PREDATE`가 언제인지 확인해 `ops/crontab.example`의 분기 수집 시작일을 정합니다.
-4. LOD 덤프를 적재한 뒤 `uv run seoji lod count`와 `SELECT count(*) FROM bronze.lod_resource`를 대조합니다(덤프 표기 3,980,216건 ±1%).
+- `seoji harvest --from 2022-05-09 --to 2022-05-09` → 8번 요청(page_size 100)으로 721건을 받았습니다. 응답 엔벌로프는 `{"PAGE_NO", "TOTAL_COUNT", "docs": [...]}`이고, 저장된 응답과 요청 파라미터 어디에도 인증키가 없었습니다.
+- 실제 응답에서 발견해 반영한 것:
+  - `EA_ISBN`이 비고 `SET_ISBN`만 있는 레코드(그날 51건)는 **세트 자체**의 레코드입니다. `SET_EXPRESSION`("전6권")은 이 레코드에만 있고 개별 권에는 없습니다. 세트 ISBN의 edition으로 만들고 `book_set.total_volumes`를 여기서 채웁니다.
+  - 명세에 없는 `REAL_PUBLISH_DATE`(실제 발행일)가 있으면 발행예정일보다 우선합니다.
+  - `FORM`에 "오디오북"이 있어 `binding='audio'`로 분류합니다.
+  - 역할어 "삽화가(그림작가)"를 그림으로 인식합니다.
+  - `PRE_PRICE`에 "비매품/무료", "연재가" 같은 문자열이 옵니다(가격 없음으로 처리). `BOOK_SIZE`에 "0*0"이 옵니다(무시).
+  - 그날 `KDC`·`DDC`·`CONTROL_NO`는 전부 비어 있었고, `SUBJECT`는 KDC 대분류 한 자리 숫자였습니다.
+- 한도와 전체 규모:
+  - `page_size` 200·500·1000 모두 오류 013 없이 동작했습니다.
+  - **날짜 필터 없이도 조회되며 전체는 5,918,366건**입니다. `sort=INPUT_DATE&order_by=ASC`, `page_size=1000`으로 5,918번째 페이지까지 1.5초 안팎에 응답했습니다. 즉 약 5,919번 요청(초당 1회 기준 약 2.5시간)으로 전체를 받을 수 있습니다.
+  - 발행예정일에는 `00010101`, `1000xxxx` 같은 오입력이 있습니다. 1990년부터 날짜 구간으로 훑으면 이런 레코드를 놓치므로, 초기 적재는 필터 없는 전체 페이징이 낫습니다(아직 구현 안 됨).
+
+## 전체 덤프를 받은 뒤 할 일
+
+LOD 덤프를 적재한 뒤 `uv run seoji lod count`와 `SELECT count(*) FROM bronze.lod_resource`를 대조합니다(덤프 표기 3,980,216건 ±1%).
