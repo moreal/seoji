@@ -7,7 +7,7 @@ from psycopg import sql
 
 from seoji.db import connect, migrate
 
-pytest_plugins = ["tests.lod_helpers", "tests.seoji_helpers"]
+pytest_plugins = ["tests.lod_helpers", "tests.seoji_helpers", "tests.pipeline_helpers"]
 
 ADMIN_URL = os.environ.get(
     "SEOJI_TEST_ADMIN_URL", "postgresql://seoji:seoji@localhost:55432/postgres"

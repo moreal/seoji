@@ -5,6 +5,7 @@ from pathlib import Path
 
 from seoji.config import load_settings
 from seoji.db import connect, migrate
+from seoji.gold.build import rebuild_search_doc
 from seoji.lod.load import load_dump
 from seoji.lod.parse import FORMATS
 from seoji.lod.sparql import sparql_construct, sparql_count_books
@@ -72,6 +73,24 @@ def _cmd_silver(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_gold_rebuild(args: argparse.Namespace) -> int:
+    with connect(load_settings().database_url) as conn:
+        print(f"{rebuild_search_doc(conn)} search documents")
+    return 0
+
+
+def _cmd_search(args: argparse.Namespace) -> int:
+    with connect(load_settings().database_url) as conn:
+        rows = conn.execute(
+            "SELECT * FROM gold.search_books(%s, %s, %s)",
+            (args.query, args.limit, args.korean_only),
+        ).fetchall()
+    for r in rows:
+        year = r["pub_year"] or ""
+        print(f"{r['isbn13']}\t{r['title']}\t{r['authors'] or ''}\t{r['publisher'] or ''}\t{year}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="seoji")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -105,6 +124,15 @@ def build_parser() -> argparse.ArgumentParser:
     silver.add_parser("refresh", help="re-merge rows changed since the last build").set_defaults(
         func=_cmd_silver
     )
+
+    gold = sub.add_parser("gold").add_subparsers(dest="gold_command", required=True)
+    gold.add_parser("rebuild", help="rebuild search documents").set_defaults(func=_cmd_gold_rebuild)
+
+    p = sub.add_parser("search", help="search titles, authors, publishers and series")
+    p.add_argument("query")
+    p.add_argument("--limit", type=int, default=20)
+    p.add_argument("--korean-only", action="store_true")
+    p.set_defaults(func=_cmd_search)
 
     return parser
 

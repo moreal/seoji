@@ -7,6 +7,7 @@ from dataclasses import dataclass
 import psycopg
 from psycopg.types.json import Jsonb
 
+from seoji.gold.build import rebuild_search_doc
 from seoji.lod.mapping import map_lod_resource
 from seoji.lod.parse import LodResource
 from seoji.merge.merge import MergedEdition, merge_edition
@@ -260,7 +261,7 @@ def _finish(conn: psycopg.Connection, state_id: int, stats: BuildStats) -> None:
     conn.commit()
 
 
-def rebuild_silver(conn: psycopg.Connection) -> BuildStats:
+def rebuild_silver(conn: psycopg.Connection, *, with_gold: bool = True) -> BuildStats:
     """Recompute every silver table from bronze."""
     stats = BuildStats()
     conn.execute(f"TRUNCATE {', '.join(REBUILT_TABLES)} RESTART IDENTITY")
@@ -269,17 +270,19 @@ def rebuild_silver(conn: psycopg.Connection) -> BuildStats:
     _map_nlseoji(conn, "true", (), stats)
     stats.editions = _merge(conn, None)
     _finish(conn, state_id, stats)
+    if with_gold:
+        rebuild_search_doc(conn)
     return stats
 
 
-def refresh_silver(conn: psycopg.Connection) -> BuildStats:
+def refresh_silver(conn: psycopg.Connection, *, with_gold: bool = True) -> BuildStats:
     """Re-map bronze rows changed since the last finished build and re-merge their ISBNs."""
     last = conn.execute(
         "SELECT started_at FROM silver.build_state WHERE finished_at IS NOT NULL"
         " ORDER BY id DESC LIMIT 1"
     ).fetchone()
     if last is None:
-        return rebuild_silver(conn)
+        return rebuild_silver(conn, with_gold=with_gold)
     since = last["started_at"]
     stats = BuildStats()
     state_id = _start(conn, "refresh")
@@ -333,4 +336,6 @@ def refresh_silver(conn: psycopg.Connection) -> BuildStats:
     )
     stats.editions = _merge(conn, isbns)
     _finish(conn, state_id, stats)
+    if with_gold and isbns:
+        rebuild_search_doc(conn, isbns)
     return stats
