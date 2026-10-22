@@ -55,3 +55,39 @@ def test_mark_missing_tombstones(db, make_nt):
         "SELECT deleted_at FROM bronze.lod_resource WHERE resource_uri = %s", (ALMOND,)
     ).fetchone()
     assert row["deleted_at"] is None
+
+
+def _split_almond(tmp_path, kr_triples):
+    """N-Triples where the almond's title triple comes after every other resource."""
+    from tests.lod_helpers import TITLE, write_nt
+
+    head = [t for t in kr_triples if not (t.subject.value == ALMOND and t.predicate.value == TITLE)]
+    tail = [t for t in kr_triples if t.subject.value == ALMOND and t.predicate.value == TITLE]
+    return write_nt(tmp_path / "split.nt", head + tail)
+
+
+def test_reload_with_split_subject_is_noop(db, tmp_path, kr_triples):
+    path = _split_almond(tmp_path, kr_triples)
+    first = load_dump(db, path, dataset="book", fmt="nt", dump_date=None, batch_size=2)
+    assert (first.resources, first.inserted) == (9, 9)
+    body = db.execute(
+        "SELECT body FROM bronze.lod_resource WHERE resource_uri = %s", (ALMOND,)
+    ).fetchone()["body"]
+    assert "http://purl.org/dc/terms/title" in body
+    before = _changed_at(db)
+    second = load_dump(db, path, dataset="book", fmt="nt", dump_date=None, batch_size=2)
+    assert (second.resources, second.changed, second.unchanged) == (9, 0, 9)
+    assert _changed_at(db) == before
+
+
+def test_split_subject_matches_contiguous_load(db, tmp_path, kr_triples):
+    load_dump(db, SAMPLE_KR, dataset="book", fmt="rdfxml", dump_date=None)
+    stats = load_dump(
+        db,
+        _split_almond(tmp_path, kr_triples),
+        dataset="book",
+        fmt="nt",
+        dump_date=None,
+        batch_size=2,
+    )
+    assert (stats.changed, stats.unchanged) == (0, 9)
