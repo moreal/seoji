@@ -6,6 +6,7 @@ from pathlib import Path
 import psycopg
 from psycopg.types.json import Jsonb
 
+from seoji.locks import lock_bronze_shared
 from seoji.lod.parse import Format, LodResource, body_hash, iter_resources, merge_bodies
 
 
@@ -57,6 +58,7 @@ def _stage(conn: psycopg.Connection, batch: dict[str, LodResource], dump_id: int
 
 def _apply_stage(conn: psycopg.Connection, stats: LoadStats, dataset: str) -> None:
     """Move the staged dump into bronze.lod_resource in one transaction."""
+    lock_bronze_shared(conn)
     counts = conn.execute(
         """
         SELECT count(*) AS resources,
@@ -78,7 +80,7 @@ def _apply_stage(conn: psycopg.Connection, stats: LoadStats, dataset: str) -> No
         """
         INSERT INTO bronze.lod_resource AS r
           (resource_uri, dataset, body, body_sha256, first_dump_id, last_dump_id, changed_at)
-        SELECT resource_uri, %(dataset)s, body, body_sha256, dump_id, dump_id, now()
+        SELECT resource_uri, %(dataset)s, body, body_sha256, dump_id, dump_id, clock_timestamp()
           FROM bronze.lod_stage WHERE dump_id = %(dump)s
         ON CONFLICT (resource_uri) DO UPDATE SET
           body = EXCLUDED.body,
@@ -127,7 +129,7 @@ def load_dump(
 
     if mark_missing:
         stats.tombstoned = conn.execute(
-            "UPDATE bronze.lod_resource SET deleted_at = now(), changed_at = now()"
+            "UPDATE bronze.lod_resource SET deleted_at = now(), changed_at = clock_timestamp()"
             " WHERE dataset = %s AND last_dump_id IS DISTINCT FROM %s AND deleted_at IS NULL",
             (dataset, dump_id),
         ).rowcount

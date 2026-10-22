@@ -7,6 +7,7 @@ from typing import Literal
 import psycopg
 from psycopg.types.json import Jsonb
 
+from seoji.locks import lock_bronze_shared
 from seoji.model import CandidateRecord, InvalidIsbn
 from seoji.nlseoji.client import SEOJI_URL, PageSizeTooLarge, SeojiClient, SeojiPage
 from seoji.nlseoji.mapping import map_seoji_doc
@@ -67,10 +68,11 @@ def _store_record(conn, key: str, isbn13: str | None, doc: dict, payload_id: int
     conn.execute(
         "INSERT INTO bronze.source_record (source, source_key, isbn13, payload_id, record,"
         " record_sha256, first_seen_at, last_seen_at, changed_at)"
-        " VALUES (%s, %s, %s, %s, %s, %s, now(), now(), now())"
+        " VALUES (%s, %s, %s, %s, %s, %s, now(), now(), clock_timestamp())"
         " ON CONFLICT (source, source_key) DO UPDATE SET isbn13 = EXCLUDED.isbn13,"
         " payload_id = EXCLUDED.payload_id, record = EXCLUDED.record,"
-        " record_sha256 = EXCLUDED.record_sha256, last_seen_at = now(), changed_at = now()",
+        " record_sha256 = EXCLUDED.record_sha256, last_seen_at = now(),"
+        " changed_at = clock_timestamp()",
         (SOURCE, key, isbn13, payload_id, Jsonb(doc), sha),
     )
     return True
@@ -78,6 +80,7 @@ def _store_record(conn, key: str, isbn13: str | None, doc: dict, payload_id: int
 
 def _harvest_day(conn, client: SeojiClient, day: date, page_size: int, stats: HarvestStats):
     ymd = day.strftime("%Y%m%d")
+    lock_bronze_shared(conn)  # held until the day is committed
     page_no = 1
     while True:
         try:

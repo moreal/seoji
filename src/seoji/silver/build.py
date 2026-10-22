@@ -8,6 +8,7 @@ import psycopg
 from psycopg.types.json import Jsonb
 
 from seoji.gold.build import rebuild_search_doc
+from seoji.locks import lock_bronze_exclusive
 from seoji.lod.mapping import map_lod_resource
 from seoji.lod.parse import LodResource
 from seoji.merge.merge import MergedEdition, merge_edition
@@ -264,6 +265,7 @@ def _finish(conn: psycopg.Connection, state_id: int, stats: BuildStats) -> None:
 def rebuild_silver(conn: psycopg.Connection, *, with_gold: bool = True) -> BuildStats:
     """Recompute every silver table from bronze."""
     stats = BuildStats()
+    lock_bronze_exclusive(conn)
     conn.execute(f"TRUNCATE {', '.join(REBUILT_TABLES)} RESTART IDENTITY")
     state_id = _start(conn, "rebuild")
     _map_lod(conn, "deleted_at IS NULL", (), stats)
@@ -277,6 +279,7 @@ def rebuild_silver(conn: psycopg.Connection, *, with_gold: bool = True) -> Build
 
 def refresh_silver(conn: psycopg.Connection, *, with_gold: bool = True) -> BuildStats:
     """Re-map bronze rows changed since the last finished build and re-merge their ISBNs."""
+    lock_bronze_exclusive(conn)  # its acquisition time bounds the next refresh's watermark
     last = conn.execute(
         "SELECT started_at FROM silver.build_state WHERE finished_at IS NOT NULL"
         " ORDER BY id DESC LIMIT 1"
