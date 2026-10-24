@@ -13,6 +13,23 @@ Seoji API ───────┘                      └─> gold.search_doc 
 - **silver**: ISBN마다 소스별 후보를 만들고 필드 우선순위 규칙으로 병합합니다. 언제든 bronze만으로 다시 만들 수 있습니다(`seoji silver rebuild`).
 - **gold**: 제목·저자·출판사·총서·권차·주제로 검색 문서를 만들고 pg_bigm으로 색인합니다.
 
+### 왜 bronze / silver / gold인가
+
+데이터 엔지니어링에서 흔히 쓰는 **메달리온 아키텍처(medallion architecture)** 용어입니다(Databricks가 퍼뜨린 이름). 데이터를 가공 단계에 따라 세 층으로 나누고, 동 → 은 → 금으로 갈수록 더 정제된 데이터라는 뜻입니다.
+
+| 층 | 스키마 | 들어 있는 것 | 다시 만들 수 있나 |
+|---|---|---|---|
+| bronze | `bronze.*` | 받은 원본 그대로(`lod_resource`, `api_payload`, `source_record`)와 수집 진행 위치 | 아니요. 다시 받아야 합니다 |
+| silver | `silver.*` | ISBN-13 단위로 정규화·병합한 책(`edition`), 저자, 세트, 주제, 필드별 출처 | 예. bronze만으로 `seoji silver rebuild` |
+| gold | `gold.*` | 검색 문서(`search_doc`)와 `search_books()` | 예. silver만으로 `seoji gold rebuild` |
+
+이렇게 나누면 다음과 같은 이점이 있습니다.
+
+- **API를 다시 부르지 않고 규칙을 고칠 수 있습니다.** 병합 규칙이 틀렸으면 bronze에서 silver를 다시 계산하면 됩니다. 예를 들어 Seoji 세트 레코드 처리와 숫자 범위 검사를 고친 뒤, 590만 건을 재수집 없이 다시 만들었습니다.
+- **문제가 생긴 단계를 가를 수 있습니다.** 원본이 원래 이상한지(bronze), 병합이 잘못됐는지(silver), 검색용 가공이 잘못됐는지(gold) 나눠서 봅니다.
+
+CLI의 `seoji silver …`는 "병합 계산", `seoji gold …`는 "검색 색인"이라고 읽으면 됩니다.
+
 ## 설치
 
 ```bash
