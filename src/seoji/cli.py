@@ -11,6 +11,7 @@ from seoji.lod.parse import FORMATS
 from seoji.lod.sparql import sparql_construct, sparql_count_books
 from seoji.nlseoji.client import SeojiClient
 from seoji.nlseoji.harvest import harvest_all, harvest_range, window_dates
+from seoji.query import QueryError, normalize_isbn
 from seoji.report import fill_rates, issue_counts, source_coverage
 from seoji.silver.build import rebuild_silver, refresh_silver
 
@@ -124,6 +125,47 @@ def _cmd_report(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_serve(args: argparse.Namespace) -> int:
+    import uvicorn
+
+    from seoji.server.app import create_app
+
+    settings = load_settings()
+    uvicorn.run(
+        create_app(settings),
+        host=args.host,
+        port=args.port,
+        proxy_headers=settings.trust_forwarded_for,
+        forwarded_allow_ips=args.forwarded_allow_ips if settings.trust_forwarded_for else None,
+        server_header=False,
+    )
+    return 0
+
+
+def _cmd_takedown(args: argparse.Namespace) -> int:
+    with connect(load_settings().database_url) as conn:
+        if args.takedown_command == "list":
+            for r in conn.execute("SELECT * FROM gold.takedown ORDER BY created_at"):
+                print(f"{r['isbn13']}\t{r['reason'] or ''}\t{r['created_at']:%Y-%m-%d}")
+            return 0
+        try:
+            isbn13 = normalize_isbn(args.isbn)
+        except QueryError as e:
+            print(e.message, file=sys.stderr)
+            return 2
+        if args.takedown_command == "add":
+            conn.execute(
+                "INSERT INTO gold.takedown (isbn13, reason) VALUES (%s, %s)"
+                " ON CONFLICT (isbn13) DO UPDATE SET reason = EXCLUDED.reason",
+                (isbn13, args.reason),
+            )
+        else:
+            conn.execute("DELETE FROM gold.takedown WHERE isbn13 = %s", (isbn13,))
+        conn.commit()
+    print(f"{args.takedown_command} {isbn13}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="seoji")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -171,6 +213,26 @@ def build_parser() -> argparse.ArgumentParser:
     p.set_defaults(func=_cmd_search)
 
     sub.add_parser("report", help="coverage, issues and fill rates").set_defaults(func=_cmd_report)
+
+    p = sub.add_parser("serve", help="run the public web, REST API and MCP server")
+    p.add_argument("--host", default="127.0.0.1")
+    p.add_argument("--port", type=int, default=8000)
+    p.add_argument(
+        "--forwarded-allow-ips", default="127.0.0.1",
+        help="proxies trusted for X-Forwarded-For (only with SEOJI_TRUST_FORWARDED_FOR)",
+    )  # fmt: skip
+    p.set_defaults(func=_cmd_serve)
+
+    takedown = sub.add_parser("takedown", help="hide ISBNs from every public channel")
+    takedown_sub = takedown.add_subparsers(dest="takedown_command", required=True)
+    p = takedown_sub.add_parser("add")
+    p.add_argument("isbn")
+    p.add_argument("--reason")
+    p.set_defaults(func=_cmd_takedown)
+    p = takedown_sub.add_parser("remove")
+    p.add_argument("isbn")
+    p.set_defaults(func=_cmd_takedown)
+    takedown_sub.add_parser("list").set_defaults(func=_cmd_takedown)
 
     return parser
 

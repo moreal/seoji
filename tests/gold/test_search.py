@@ -1,14 +1,6 @@
-import pytest
-
 from seoji.gold.build import rebuild_search_doc
-from seoji.silver.build import rebuild_silver, refresh_silver
+from seoji.silver.build import refresh_silver
 from tests.lod_helpers import NLK
-
-
-@pytest.fixture
-def built(loaded):
-    rebuild_silver(loaded)
-    return loaded
 
 
 def search(db, q, lim=20, korean_only=False):
@@ -83,3 +75,20 @@ def test_partial_rebuild(built):
 
 def test_search_by_title_and_volume(built):
     assert "9788925807164" in {r["isbn13"] for r in search(built, "오토멘 제4권")}
+
+
+def test_search_offset_pages_through_results(built):
+    first = built.execute("SELECT isbn13 FROM gold.search_books('재판', 3, false, 0)").fetchall()
+    second = built.execute("SELECT isbn13 FROM gold.search_books('재판', 3, false, 3)").fetchall()
+    assert first and second
+    assert not {r["isbn13"] for r in first} & {r["isbn13"] for r in second}
+
+
+def test_takedown_hides_from_search(built):
+    built.execute("INSERT INTO gold.takedown (isbn13, reason) VALUES ('9788936434267', 'test')")
+    assert all(r["isbn13"] != "9788936434267" for r in search(built, "아몬드"))
+
+
+def test_search_ranks_a_capped_candidate_set(built):
+    rows = built.execute("SELECT isbn13 FROM gold.search_books('재판', 10, false, 0, 1)").fetchall()
+    assert len(rows) == 1

@@ -1,0 +1,125 @@
+:root {
+  --bg: #fbfaf7;
+  --surface: #ffffff;
+  --text: #1d1b18;
+  --muted: #6b665e;
+  --line: #e6e1d8;
+  --accent: #2f5d50;
+  --accent-text: #ffffff;
+  --cover-bg: #efebe3;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #151412;
+    --surface: #1e1c19;
+    --text: #ece8e1;
+    --muted: #a39d93;
+    --line: #34312c;
+    --accent: #7fb7a4;
+    --accent-text: #10201b;
+    --cover-bg: #2a2723;
+    color-scheme: dark;
+  }
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard",
+    "Noto Sans KR", "Malgun Gothic", sans-serif;
+  word-break: keep-all;
+}
+a { color: var(--accent); }
+code { font-size: 0.9em; }
+
+.top {
+  position: sticky; top: 0; z-index: 2;
+  display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: center;
+  padding: 14px 20px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--line);
+}
+.brand { font-weight: 700; font-size: 1.25rem; text-decoration: none; color: var(--text); }
+.search { display: flex; flex: 1 1 420px; gap: 8px; align-items: center; flex-wrap: wrap; }
+.search input[type="search"] {
+  flex: 1 1 240px; min-width: 0;
+  padding: 10px 12px; font: inherit;
+  border: 1px solid var(--line); border-radius: 8px;
+  background: var(--surface); color: var(--text);
+}
+.search button, .more {
+  padding: 10px 16px; font: inherit; font-weight: 600;
+  border: 0; border-radius: 8px;
+  background: var(--accent); color: var(--accent-text); cursor: pointer;
+}
+.toggle { color: var(--muted); font-size: 0.9rem; white-space: nowrap; }
+
+.layout {
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 24px;
+  max-width: 1200px; margin: 0 auto; padding: 20px;
+}
+.layout:has(.detail:not([hidden])) { grid-template-columns: minmax(0, 1fr) minmax(320px, 440px); }
+.status { color: var(--muted); margin: 0 0 12px; }
+
+.results { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.card {
+  display: flex; gap: 14px; width: 100%; padding: 10px;
+  text-align: left; font: inherit; color: inherit;
+  background: var(--surface); border: 1px solid var(--line); border-radius: 10px; cursor: pointer;
+}
+.card:hover, .card:focus-visible { border-color: var(--accent); outline: none; }
+.card-text { display: flex; flex-direction: column; min-width: 0; }
+.card-title { font-weight: 600; }
+.card-authors, .card-meta { color: var(--muted); font-size: 0.9rem; }
+
+.cover {
+  flex: none; width: 56px; height: 80px; object-fit: cover;
+  border-radius: 4px; background: var(--cover-bg);
+}
+.cover-empty {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.7rem; color: var(--muted); text-align: center;
+}
+.more { margin: 16px auto 0; display: block; }
+.more[hidden] { display: none; }
+
+.detail {
+  position: sticky; top: 84px; align-self: start;
+  max-height: calc(100vh - 104px); overflow: auto;
+  padding: 20px; background: var(--surface);
+  border: 1px solid var(--line); border-radius: 12px;
+}
+.detail[hidden] { display: none; }
+.detail-head { display: flex; gap: 16px; }
+.detail-head .cover { width: 96px; height: 138px; }
+.detail h2 { margin: 0 0 4px; font-size: 1.25rem; line-height: 1.35; }
+.detail h3 { font-size: 1rem; margin: 20px 0 6px; }
+.subtitle, .contributors { margin: 0 0 4px; color: var(--muted); }
+.close {
+  float: right; width: 32px; height: 32px; font-size: 1.25rem; line-height: 1;
+  background: none; border: 1px solid var(--line); border-radius: 50%; color: var(--muted); cursor: pointer;
+}
+.facts { display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; margin: 18px 0 0; }
+.facts dt { color: var(--muted); }
+.facts dd { margin: 0; overflow-wrap: anywhere; }
+.sets { margin: 0; padding-left: 20px; }
+.link { padding: 2px 0; font: inherit; color: var(--accent); background: none; border: 0; cursor: pointer; text-align: left; }
+.fine { margin: 14px 0 0; font-size: 0.8rem; color: var(--muted); overflow-wrap: anywhere; }
+
+.foot {
+  max-width: 1200px; margin: 24px auto 0; padding: 16px 20px 32px;
+  border-top: 1px solid var(--line); color: var(--muted); font-size: 0.85rem;
+}
+.foot p { margin: 4px 0; }
+
+@media (max-width: 760px) {
+  .top { padding: 12px 16px; }
+  .layout, .layout:has(.detail:not([hidden])) { grid-template-columns: minmax(0, 1fr); padding: 16px; }
+  .detail {
+    position: fixed; inset: 0; top: auto; z-index: 3;
+    max-height: 85vh; border-radius: 16px 16px 0 0;
+  }
+}

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>seoji · 한국 도서 서지 검색</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="/">seoji</a>
+    <form id="search-form" class="search" role="search">
+      <input id="q" name="q" type="search" placeholder="제목, 저자, 출판사, 총서명" maxlength="100"
+             autocomplete="off" aria-label="검색어" required>
+      <label class="toggle"><input id="korean-only" type="checkbox"> 국내 ISBN만</label>
+      <button type="submit">검색</button>
+    </form>
+  </header>
+
+  <main class="layout">
+    <section class="results-pane" aria-label="검색 결과">
+      <p id="status" class="status" aria-live="polite">국립중앙도서관 서지 데이터에서 책을 찾아보세요.</p>
+      <ol id="result-list" class="results"></ol>
+      <button id="more" class="more" type="button" hidden>더 보기</button>
+    </section>
+    <aside id="detail" class="detail" aria-label="책 상세" hidden></aside>
+  </main>
+
+  <footer class="foot">
+    <p id="attribution"></p>
+    <p id="notice"></p>
+    <p id="contact"></p>
+    <p>REST API <code>/api/v1</code> (스키마 <a href="/api/openapi.json">/api/openapi.json</a>) · MCP <code>/mcp</code></p>
+  </footer>
+</body>
+</html>

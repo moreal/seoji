@@ -16,3 +16,12 @@ def loaded(db, make_client):
     client, _, _ = make_client(paged_handler)
     harvest_range(db, client, date(2022, 5, 9), date(2022, 5, 9), page_size=2)
     return db
+
+
+@pytest.fixture
+def built(loaded):
+    """silver and gold rebuilt from the fixtures."""
+    from seoji.silver.build import rebuild_silver
+
+    rebuild_silver(loaded)
+    return loaded

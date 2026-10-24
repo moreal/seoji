@@ -96,6 +96,90 @@ SQL에서는 `SELECT * FROM gold.search_books('질의', 20, false);`로 검색�
 
 정기 실행 예시는 [`ops/crontab.example`](ops/crontab.example)에 있습니다.
 
+## 조회 서버 (웹 · REST API · MCP)
+
+`seoji serve` 하나로 웹 화면, REST API, MCP 서버가 함께 뜹니다. 세 경로 모두 `seoji.query` 모듈 하나를 거치므로 공개 정책도 한 곳에서 적용됩니다.
+
+```bash
+uv run seoji serve --port 8000          # http://localhost:8000
+```
+
+| 경로 | 내용 |
+|---|---|
+| `/` | 검색 화면 (HTML 한 장과 바닐라 JS, 빌드 단계 없음) |
+| `GET /api/v1/search?q=…&limit=20&offset=0&korean_only=false` | 검색. `limit` 1~50, `offset` 0~1000, 다음 페이지가 있으면 `has_more: true` |
+| `GET /api/v1/books/{isbn}` | 책 한 권. ISBN-10·13, 하이픈 허용 |
+| `GET /api/v1/sets/{isbn}` | 세트와 소속 권 |
+| `GET /api/v1/meta` | 출처 표시, 안내문, 게시중단 연락처, 마지막 빌드 시각 |
+| `/api/openapi.json` | OpenAPI 스키마 (Swagger UI는 CDN 스크립트를 써서 CSP와 맞지 않아 끄고 스키마만 냅니다) |
+| `/mcp` | MCP (Streamable HTTP, stateless). 도구: `search_books`, `get_book`, `get_book_set` |
+
+Claude Code에 MCP를 붙이는 예시는 다음과 같습니다.
+
+```bash
+claude mcp add --transport http seoji http://localhost:8000/mcp
+```
+
+오류는 `{"error": {"code": "...", "message": "..."}}` 형태로 옵니다. 주요 상태 코드는 다음과 같습니다.
+- 400: 잘못된 요청, 정책 범위를 넘은 요청 (검색어 100자·8단어 초과, 제어 문자 포함 등)
+- 404: 없는 책
+- 429: 요청 수 초과 또는 동시 요청 초과. `Retry-After` 헤더가 함께 옵니다
+- 503: 검색 시간 초과, 서버가 바쁨(연결 대기 2초 초과), DB 오류
+
+### 공개 정책
+
+[`reports/서지 데이터 재배포 가능성.md`](reports/서지%20데이터%20재배포%20가능성.md)의 조사에 따라 다음과 같이 정했습니다.
+
+- **사실 필드만 공개합니다.** `query.PUBLIC_EDITION_FIELDS` 허용 목록에 있는 필드만 밖으로 나갑니다.
+- **책소개·목차·서평·초록은 기본으로 막습니다.** 출판사·저자·평론가의 저작물일 수 있기 때문입니다. 국립중앙도서관의 서면 확인을 받은 뒤에만 `SEOJI_PUBLIC_RICH_TEXT=true`로 엽니다.
+- **표지는 원본 URL로만 연결합니다.** `http`는 `https`로 바꾸고, 사설·로컬 주소는 뺍니다. 이미지를 내려받거나 다시 올리지 않습니다.
+- **대량 복제를 막습니다.** 요청당 최대 50건, offset 최대 1,000, IP별 분당 요청 수 제한을 둡니다(데이터베이스제작자 권리 대응).
+- **게시중단 절차를 둡니다.** `seoji takedown add ISBN --reason "…"`으로 등록한 책은 웹·API·MCP 어디에도 나오지 않습니다. `seoji takedown list`, `seoji takedown remove ISBN`도 있습니다. 요청을 받을 연락처는 `SEOJI_CONTACT`로 지정하면 화면 하단과 `/api/v1/meta`에 표시됩니다.
+
+### 보안 설정
+
+별도 보안 검토(서브에이전트)를 거쳐 다음을 적용했습니다.
+
+- **DB 권한을 최소로 줍니다.** 서버는 SELECT 권한만 가진 `seoji_public` 역할로 동작합니다(마이그레이션 010).
+  - 권한은 조회 계층이 읽는 테이블에만 있습니다. `bronze.*`, 필드별 출처 기록, 책소개·목차·서평 테이블은 읽을 수 없습니다.
+  - 그 위에 읽기 전용 트랜잭션과 `statement_timeout = 3s`를 겁니다.
+  - 운영에서는 `seoji_public`에 로그인 권한을 주고 그 계정으로 접속하세요. `SET ROLE` 방식보다 강합니다. 세션이 원래 역할로 되돌아갈 수 없기 때문입니다.
+    ```sql
+    ALTER ROLE seoji_public LOGIN PASSWORD '…';
+    ```
+    그리고 `SEOJI_PUBLIC_DATABASE_URL=postgresql://seoji_public:…@host/seoji`을 설정합니다. 설정하지 않으면 `DATABASE_URL`로 접속한 뒤 연결마다 `SET ROLE seoji_public`을 합니다.
+  - 책소개 등을 공개하려면 `SEOJI_PUBLIC_RICH_TEXT=true`와 함께 아래를 실행해야 합니다. 두 단계를 모두 거쳐야 열립니다.
+    ```sql
+    GRANT SELECT ON silver.edition_rich_text TO seoji_public;
+    ```
+- **검색 비용에 상한을 둡니다.**
+  - 검색어는 NFKC 정규화한 뒤 100자·8단어 이하만 받고, 제어 문자는 거부합니다.
+  - 순위를 매기는 후보는 최대 2만 건입니다. 이 덕분에 "이" 같은 한 글자 질의가 4.5초에서 0.1초로 줄었습니다.
+  - 풀에서 연결을 2초 안에 못 얻으면 503으로 답합니다.
+- **요청 수를 제한합니다.**
+  - 대상 경로는 `/api/`, `/mcp`, `/healthz`입니다. 클라이언트마다 분당 요청 수(`SEOJI_RATE_LIMIT_PER_MINUTE`)와 동시 요청 4개로 제한합니다.
+  - IPv6는 `/64` 단위로 묶습니다.
+  - 이 제한은 프로세스 메모리 안에서 동작합니다. 여러 프로세스나 서버로 운영하면 리버스 프록시에서도 제한을 거세요.
+- **Host와 Origin을 검증합니다.**
+  - `SEOJI_ALLOWED_HOSTS`(기본 `localhost,127.0.0.1`)에 없는 Host는 400을 받습니다. MCP의 DNS rebinding 방어도 같은 목록을 씁니다.
+  - 공개 배포 때는 실제 도메인을 넣으세요. 와일드카드(`*.example.org`)는 웹·API에서는 동작하지만 MCP에서는 정확히 일치해야 해서 421이 납니다.
+- **CORS는 기본으로 꺼져 있습니다.** 다른 사이트의 방문자 브라우저가 이 API를 대신 긁어 가는 것을 막기 위해서입니다. 다른 웹 앱이 브라우저에서 이 API를 부르게 하려면 `SEOJI_CORS_ORIGINS`에 그 Origin을 적으세요. 서버 대 서버 호출에는 CORS가 필요 없습니다.
+- **보안 헤더는 모든 응답에 붙습니다.** 400·429 응답도 포함됩니다.
+  - CSP는 `script-src 'self'`(인라인 금지), `img-src 'self' https://www.nl.go.kr https://nl.go.kr`, `frame-ancestors 'none'`입니다.
+  - 그 밖에 `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `X-Frame-Options: DENY`를 붙입니다.
+- **표지 URL은 허용 목록으로 거릅니다.** `www.nl.go.kr`과 `nl.go.kr`만 남기고, `https`로 바꾸고, 사용자 정보나 비표준 포트가 붙은 URL은 버립니다.
+- **프록시 뒤에서 운영할 때**는 `SEOJI_TRUST_FORWARDED_FOR=true`로 두고 `seoji serve --forwarded-allow-ips <프록시 IP>`로 실행합니다. `*`는 쓰지 마세요. HSTS는 프록시에서 설정합니다.
+
+| 환경변수 | 기본값 | 설명 |
+|---|---|---|
+| `SEOJI_PUBLIC_DATABASE_URL` | 없음 | `seoji_public`으로 로그인하는 접속 URL (권장) |
+| `SEOJI_PUBLIC_RICH_TEXT` | `false` | 책소개·목차·서평·초록 공개 여부 (GRANT도 필요) |
+| `SEOJI_CONTACT` | 없음 | 게시중단·정정 요청 연락처 |
+| `SEOJI_RATE_LIMIT_PER_MINUTE` | `60` | 클라이언트별 분당 요청 수 |
+| `SEOJI_ALLOWED_HOSTS` | `localhost,127.0.0.1` | 허용 Host 목록 (쉼표 구분) |
+| `SEOJI_CORS_ORIGINS` | 없음 | 브라우저 교차 출처 호출을 허용할 Origin 목록 |
+| `SEOJI_TRUST_FORWARDED_FOR` | `false` | 리버스 프록시의 `X-Forwarded-For` 신뢰 |
+
 ## 병합 규칙 요약
 
 | 필드 | 우선순위 |
