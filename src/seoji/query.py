@@ -25,6 +25,7 @@ MAX_QUERY_LENGTH = 100  # after NFKC, which can expand one character into many
 COVER_HOSTS = ("www.nl.go.kr", "nl.go.kr")  # every cover URL in the data points here
 MAX_TERMS = 8  # each term is one pg_bigm LIKE; dozens of one-letter terms cost seconds
 _CONTROL = re.compile(r"[\x00-\x1f\x7f]")
+_ISBN_LIKE = re.compile(r"^(?:\d{9}[\dXx]|\d{13})$")
 ATTRIBUTION = (
     "서지 데이터 출처: 국립중앙도서관 ISBN 서지정보 유통지원시스템(Seoji), "
     "국립중앙도서관 국가서지 LOD(공공누리 제1유형·CC0 1.0)"
@@ -114,15 +115,19 @@ def search(
         raise QueryError("limit_out_of_range", f"limit은 1~{MAX_LIMIT} 사이여야 합니다")
     if not 0 <= offset <= MAX_OFFSET:
         raise QueryError("offset_out_of_range", f"offset은 0~{MAX_OFFSET} 사이여야 합니다")
-    rows = conn.execute(
-        """
-        SELECT s.isbn13, s.title, s.authors, s.publisher, s.pub_year,
-               e.binding, e.volume_label, e.cover_url
-          FROM gold.search_books(%s, %s, %s, %s) s
-          JOIN silver.edition e USING (isbn13)
-        """,
-        (q, limit + 1, korean_only, offset),
-    ).fetchall()
+    isbn = _as_isbn(normalized)
+    if isbn is not None:
+        rows = _isbn_rows(conn, isbn, korean_only) if offset == 0 else []
+    else:
+        rows = conn.execute(
+            """
+            SELECT s.isbn13, s.title, s.authors, s.publisher, s.pub_year,
+                   e.binding, e.volume_label, e.cover_url
+              FROM gold.search_books(%s, %s, %s, %s) s
+              JOIN silver.edition e USING (isbn13)
+            """,
+            (q, limit + 1, korean_only, offset),
+        ).fetchall()
     items = [
         {k: _json_value(r[k]) for k in SEARCH_ITEM_FIELDS}
         | {"cover_url": public_cover_url(r["cover_url"])}
@@ -130,6 +135,28 @@ def search(
     ]
     return {"query": q, "limit": limit, "offset": offset, "has_more": len(rows) > limit,
             "items": items}  # fmt: skip
+
+
+def _as_isbn(text: str) -> str | None:
+    """A query that is exactly one valid ISBN-10/13 (spaces and hyphens ignored)."""
+    compact = re.sub(r"[\s-]", "", text)
+    if not _ISBN_LIKE.match(compact):
+        return None
+    value = parse_isbn_value(compact)
+    return value.isbn13 if value else None
+
+
+def _isbn_rows(conn: psycopg.Connection, isbn13: str, korean_only: bool) -> list[dict]:
+    return conn.execute(
+        """
+        SELECT e.isbn13, d.title, d.authors, d.publisher, d.pub_year,
+               e.binding, e.volume_label, e.cover_url
+          FROM silver.edition e JOIN gold.search_doc d USING (isbn13)
+         WHERE e.isbn13 = %s AND (%s = false OR e.is_korean) AND
+        """
+        + _NOT_TAKEN_DOWN.format(col="e.isbn13"),
+        (isbn13, korean_only),
+    ).fetchall()
 
 
 def get_book(

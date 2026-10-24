@@ -143,3 +143,33 @@ def test_taken_down_set_is_hidden(built):
         "SELECT isbn13 FROM silver.set_member WHERE set_isbn13 = %s LIMIT 1", (TRIAL_SET,)
     ).fetchone()["isbn13"]
     assert query.get_book(built, member)["sets"] == []
+
+
+@pytest.mark.parametrize("q", [ALMOND, "978-89-364-3426-7", "8936434268", " 978 89 364 3426 7 "])
+def test_search_by_isbn_returns_that_book(built, q):
+    result = query.search(built, q)
+    assert [i["isbn13"] for i in result["items"]] == [ALMOND]
+    assert result["has_more"] is False
+    assert set(result["items"][0]) == set(query.SEARCH_ITEM_FIELDS)
+
+
+def test_search_by_unknown_isbn_is_empty(built):
+    assert query.search(built, "9791180000027")["items"] == []
+
+
+def test_search_by_isbn_respects_takedown_and_korean_only(built):
+    foreign = built.execute(
+        "SELECT isbn13 FROM silver.edition WHERE NOT is_korean LIMIT 1"
+    ).fetchone()["isbn13"]
+    assert query.search(built, foreign)["items"]
+    assert query.search(built, foreign, korean_only=True)["items"] == []
+    built.execute("INSERT INTO gold.takedown (isbn13, reason) VALUES (%s, 'test')", (ALMOND,))
+    assert query.search(built, ALMOND)["items"] == []
+
+
+def test_search_by_isbn_beyond_first_page_is_empty(built):
+    assert query.search(built, ALMOND, offset=20)["items"] == []
+
+
+def test_bad_checksum_digits_fall_back_to_text_search(built):
+    assert query.search(built, "9788936434268")["items"] == []  # no title contains it

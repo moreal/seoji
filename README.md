@@ -107,7 +107,7 @@ uv run seoji serve --port 8000          # http://localhost:8000
 | 경로 | 내용 |
 |---|---|
 | `/` | 검색 화면 (HTML 한 장과 바닐라 JS, 빌드 단계 없음) |
-| `GET /api/v1/search?q=…&limit=20&offset=0&korean_only=false` | 검색. `limit` 1~50, `offset` 0~1000, 다음 페이지가 있으면 `has_more: true` |
+| `GET /api/v1/search?q=…&limit=20&offset=0&korean_only=false` | 검색. `limit` 1~50, `offset` 0~1000, 다음 페이지가 있으면 `has_more: true`. 검색어 전체가 유효한 ISBN-10·13이면(하이픈·공백 허용) 그 책만 정확히 찾습니다 |
 | `GET /api/v1/books/{isbn}` | 책 한 권. ISBN-10·13, 하이픈 허용 |
 | `GET /api/v1/sets/{isbn}` | 세트와 소속 권 |
 | `GET /api/v1/meta` | 출처 표시, 안내문, 게시중단 연락처, 마지막 빌드 시각 |
