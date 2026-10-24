@@ -16,6 +16,19 @@ PRECEDENCE: dict[str, tuple[str, ...]] = {
 }
 
 
+# Plausible ranges for numeric fields; anything outside (e.g. a price of 10^15 seen in Seoji)
+# is treated as missing so the next source can win.
+NUMBER_RANGES: dict[str, tuple[float, float]] = {
+    "page_count": (1, 20_000),
+    "price_planned": (1, 100_000_000),
+    "price_real": (1, 100_000_000),
+    "width_mm": (10, 2_000),
+    "height_mm": (10, 2_000),
+    "height_cm": (1, 200),
+    "volumes": (1, 10_000),
+}
+
+
 def is_valid(field: str, value: Any) -> bool:
     if value is None:
         return False
@@ -23,8 +36,9 @@ def is_valid(field: str, value: Any) -> bool:
         return True
     if isinstance(value, str):
         return value.strip() not in ("", "0")
-    if field == "page_count":
-        return 1 <= value <= 20000
+    if field in NUMBER_RANGES:
+        low, high = NUMBER_RANGES[field]
+        return low <= value <= high
     if field == "pub_date":
         return date(1400, 1, 1) <= value <= date.today() + timedelta(days=730)
     if isinstance(value, int | float):

@@ -146,3 +146,31 @@ def test_rich_text_only_from_primary_lod():
     b.rich_text = {"toc": "secondary"}
     m = merge_edition(ISBN, [a, b])
     assert m.rich_text == [("toc", "lod", "primary")]
+
+
+def test_absurd_numbers_are_rejected():
+    m = merge_edition(
+        ISBN,
+        [
+            seoji(
+                title="x",
+                price_planned=1_000_000_000_000_000,
+                price_real=12000,
+                width_mm=99999,
+                height_mm=0,
+                page_count=263,
+            )
+        ],
+    )
+    assert "price_planned" not in m.fields
+    assert m.fields["price_real"] == 12000
+    assert "width_mm" not in m.fields
+    assert m.fields["page_count"] == 263
+
+
+def test_every_int_column_value_fits_postgres_int():
+    from seoji.merge.rules import is_valid
+
+    for name in ("price_planned", "price_real", "page_count", "width_mm", "height_mm", "volumes"):
+        assert not is_valid(name, 2**31), name
+    assert not is_valid("height_cm", 10_000.0)

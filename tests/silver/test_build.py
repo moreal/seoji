@@ -225,3 +225,19 @@ def test_real_seoji_set_record_fills_book_set(db, make_client):
         "SELECT count(*) AS n FROM silver.set_member WHERE set_isbn13 = '9791169031547'"
     ).fetchone()["n"]
     assert members == 2
+
+
+def test_malformed_set_add_code_does_not_break_rebuild(db, make_client):
+    import httpx
+
+    from seoji.nlseoji.harvest import harvest_range
+    from tests.seoji_helpers import fixture
+
+    doc = {k: v for k, v in fixture("real_20220509_sample.json")["docs"][2].items() if k != "_case"}
+    doc |= {"SET_ADD_CODE": "0581012"}
+    page = {"PAGE_NO": "1", "TOTAL_COUNT": "1", "docs": [doc]}
+    client, _, _ = make_client(lambda r: httpx.Response(200, json=page))
+    harvest_range(db, client, date(2022, 5, 9), date(2022, 5, 9), page_size=10)
+    rebuild_silver(db)
+    row = one(db, "SELECT set_add_code FROM silver.book_set WHERE set_isbn13 = %s", doc["SET_ISBN"])
+    assert row["set_add_code"] is None

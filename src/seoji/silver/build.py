@@ -255,7 +255,8 @@ def _sync_sets(conn: psycopg.Connection, scope: list[str] | None) -> None:
         f"""
         INSERT INTO silver.book_set AS b
           (set_isbn13, set_add_code, set_expression, title, total_volumes, is_open_ended)
-        SELECT l.set_isbn13, l.code, l.expr, e.title, v.total, v.total IS NULL
+        SELECT l.set_isbn13, CASE WHEN l.code ~ '^[0-9]{5}$' THEN l.code END, l.expr, e.title,
+               v.total, v.total IS NULL
           FROM ({links}) l
           LEFT JOIN silver.edition e ON e.isbn13 = l.set_isbn13
           CROSS JOIN LATERAL (
