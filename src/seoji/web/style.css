@@ -42,7 +42,10 @@ code { font-size: 0.9em; }
   background: var(--bg);
   border-bottom: 1px solid var(--line);
 }
-.brand { font-weight: 700; font-size: 1.25rem; text-decoration: none; color: var(--text); }
+.brand {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-weight: 700; font-size: 1.25rem; text-decoration: none; color: var(--text);
+}
 .search { display: flex; flex: 1 1 420px; gap: 8px; align-items: center; flex-wrap: wrap; }
 .search input[type="search"] {
   flex: 1 1 240px; min-width: 0;
