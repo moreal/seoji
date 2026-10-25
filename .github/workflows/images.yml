@@ -1,0 +1,48 @@
+# Container images for the homelab deployment (moreal/homelab services/seoji):
+#   ghcr.io/moreal/seoji           latest, sha-<7>       — CLI + server
+#   ghcr.io/moreal/seoji-postgres  17-latest, 17-sha-<7> — CNPG operand with pg_bigm
+# The homelab follows seoji:latest by digest automatically; it pins seoji-postgres by hand.
+name: images
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: seoji
+            context: .
+            tag_prefix: ""
+          - name: seoji-postgres
+            context: docker/postgres-cnpg
+            tag_prefix: "17-"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: sha
+        run: echo "short=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+      - uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.name }}:${{ matrix.tag_prefix }}latest
+            ghcr.io/${{ github.repository_owner }}/${{ matrix.name }}:${{ matrix.tag_prefix }}sha-${{ steps.sha.outputs.short }}
+          cache-from: type=gha,scope=${{ matrix.name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.name }}
