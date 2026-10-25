@@ -218,6 +218,20 @@ claude mcp add --transport http seoji http://localhost:8000/mcp
 - LOD는 "한국 도서"가 아니라 "국중 소장 자료"라 외국 ISBN도 들어 있습니다. `is_korean`(접두 978-89, 979-11)과 `--korean-only`로 거릅니다.
 - 국가서지 데이터에는 체크섬이 틀린 ISBN이 실제로 있습니다(세트 ISBN 오타, `97811…` 등). 이런 값은 버리지 않고 `silver.merge_issue(kind='invalid_isbn')`에 남깁니다.
 
+## 컨테이너 이미지
+
+main에 push하면 GitHub Actions(`.github/workflows/images.yml`)가 이미지 두 개를 GHCR에 올립니다.
+
+| 이미지 | 태그 | 용도 |
+|---|---|---|
+| `ghcr.io/moreal/seoji` | `latest`, `sha-<7자리>` | CLI와 서버. 기본 명령은 `seoji serve --host 0.0.0.0`이고, `harvest …`나 `db migrate`처럼 인자를 주면 그 하위 명령을 실행합니다 |
+| `ghcr.io/moreal/seoji-postgres` | `17-latest`, `17-sha-<7자리>` | CloudNativePG용 PostgreSQL 17 + pg_bigm(`docker/postgres-cnpg/`). 로컬 개발용 `docker/postgres/`와 같은 pg_bigm 빌드입니다 |
+
+```bash
+docker build -t seoji .
+docker run --rm -e DATABASE_URL=postgresql://seoji:seoji@host.docker.internal:55432/seoji seoji db migrate
+```
+
 ## 개발
 
 ```bash

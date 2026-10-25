@@ -1,0 +1,11 @@
+.git
+.venv
+.env
+.claude
+.superpowers
+assets
+docs
+reports
+research_notes
+tests
+**/__pycache__
